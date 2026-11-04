@@ -1,9 +1,21 @@
 import { useState } from "react";
-import { Mail, Send, CheckCircle, Code2 } from "lucide-react";
-import { GithubIcon } from "./SocialIcons"; // <-- Importamos nuestro icono seguro
+import { Mail, Send, CheckCircle, Code2, Copy, Check } from "lucide-react";
+import { GithubIcon } from "./SocialIcons";
 
 export const Contact = () => {
   const [submitted, setSubmitted] = useState(false);
+  const EMAIL = "alber.grs@gmail.com";
+  const [copied, setCopied] = useState(false);
+
+  const copyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(EMAIL);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      window.location.href = `mailto:${EMAIL}`; // fallback si el portapapeles está bloqueado
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -37,7 +49,41 @@ export const Contact = () => {
                 <div>
                   <p className="text-xs text-slate-400">Email</p>
                   <span className="text-sm font-medium text-white">
-                    alberto@example.com
+                    <a
+                      href={`mailto:${EMAIL}?subject=${encodeURIComponent("Contacto desde tu portfolio")}`}
+                      className="group flex items-center gap-4 rounded-xl text-slate-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
+                    >
+                      <div className="p-3 bg-blue-600/10 text-blue-400 rounded-xl border border-blue-500/20 transition-colors group-hover:bg-blue-600/20">
+                        <Mail className="w-5 h-5" aria-hidden="true" />
+                      </div>
+                      <div>
+                        <p className="text-xs text-slate-400">Email</p>
+                        <span className="select-all text-sm font-medium text-white transition-colors group-hover:text-blue-400">
+                          {EMAIL}
+
+                          <button
+                            type="button"
+                            onClick={copyEmail}
+                            aria-label={
+                              copied ? "Email copiado" : "Copiar email"
+                            }
+                            className="ml-auto rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                          >
+                            {copied ? (
+                              <Check
+                                className="h-4 w-4 text-emerald-400"
+                                aria-hidden="true"
+                              />
+                            ) : (
+                              <Copy className="h-4 w-4" aria-hidden="true" />
+                            )}
+                          </button>
+                          <span aria-live="polite" className="sr-only">
+                            {copied ? "Email copiado al portapapeles" : ""}
+                          </span>
+                        </span>
+                      </div>
+                    </a>
                   </span>
                 </div>
               </div>
