@@ -1,4 +1,5 @@
 import { Terminal, ArrowRight, Database, Code2 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export const Hero = () => {
   return (
@@ -53,20 +54,20 @@ export const Hero = () => {
 
           {/* Botones de Acción (CTAs) */}
           <div className="mt-10 flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
-            <a
-              href="#projects"
+            <Link
+              to="/projects"
               className="w-full sm:w-auto flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-medium px-6 py-3.5 rounded-xl transition-all shadow-lg shadow-blue-600/25"
             >
               <span>Ver Proyectos</span>
               <ArrowRight className="w-4 h-4" />
-            </a>
+            </Link>
 
-            <a
-              href="#contact"
+            <Link
+              to="/contact"
               className="w-full sm:w-auto flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 font-medium px-6 py-3.5 rounded-xl transition-all"
             >
               <span>Contactar</span>
-            </a>
+            </Link>
           </div>
         </div>
       </div>

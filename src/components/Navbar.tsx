@@ -28,6 +28,9 @@ export const Navbar = () => {
             <Link to="/projects" className="text-slate-300 hover:text-blue-400 text-sm font-medium transition-colors">
               Proyectos
             </Link>
+            <Link to="/contact" className="text-slate-300 hover:text-blue-400 text-sm font-medium transition-colors">
+              Contacto
+            </Link>
           </nav>
 
           {/* Enlaces a Redes / Contacto Directo */}
