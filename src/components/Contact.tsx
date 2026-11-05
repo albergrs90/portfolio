@@ -9,14 +9,15 @@ export const Contact = () => {
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    const timer = setTimeout(() => setCopied(false), 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
   const copyEmail = async () => {
     try {
       await navigator.clipboard.writeText(EMAIL);
       setCopied(true);
-      useEffect(() => {
-        const timer = setTimeout(() => setCopied(false), 2000);
-        return () => clearTimeout(timer);
-      }, []);
     } catch {
       window.location.href = `mailto:${EMAIL}`;
     }
@@ -48,7 +49,6 @@ export const Contact = () => {
 
     try {
       const { error: dbError } = await supabase
-        .schema("portfolio")
         .from("mensajes")
         .insert([{ nombre, email, mensaje, leido: false }]);
 
