@@ -28,9 +28,18 @@ export const Contact = () => {
     setError(null);
 
     const form = e.target as HTMLFormElement;
-    const nombre = (form.querySelector('input[placeholder="Tu nombre o empresa"]') as HTMLInputElement).value;
-    const email = (form.querySelector('input[placeholder="correo@ejemplo.com"]') as HTMLInputElement).value;
-    const mensaje = (form.querySelector("textarea") as HTMLTextAreaElement).value;
+    const nombre = (
+      form.querySelector(
+        'input[placeholder="Tu nombre o empresa"]',
+      ) as HTMLInputElement
+    ).value;
+    const email = (
+      form.querySelector(
+        'input[placeholder="correo@ejemplo.com"]',
+      ) as HTMLInputElement
+    ).value;
+    const mensaje = (form.querySelector("textarea") as HTMLTextAreaElement)
+      .value;
 
     if (!nombre || !email || !mensaje) {
       setError("Por favor completa todos los campos");
@@ -38,7 +47,10 @@ export const Contact = () => {
     }
 
     try {
-      const { error: dbError } = await supabase.from("mensajes").insert([{ nombre, email, mensaje, leido: false }]);
+      const { error: dbError } = await supabase
+        .schema("portfolio")
+        .from("mensajes")
+        .insert([{ nombre, email, mensaje, leido: false }]);
 
       if (dbError) throw dbError;
 
@@ -65,7 +77,8 @@ export const Contact = () => {
             Contacto y <span className="text-blue-500">Colaboración</span>
           </h2>
           <p className="mt-3 text-slate-400 text-lg max-w-xl">
-            ¿Tienes una propuesta laboral, un proyecto en mente o quieres hablar de tecnología? Escríbeme y te responderé lo antes posible.
+            ¿Tienes una propuesta laboral, un proyecto en mente o quieres hablar
+            de tecnología? Escríbeme y te responderé lo antes posible.
           </p>
         </div>
 
@@ -98,11 +111,16 @@ export const Contact = () => {
                           <button
                             type="button"
                             onClick={copyEmail}
-                            aria-label={copied ? "Email copiado" : "Copiar email"}
+                            aria-label={
+                              copied ? "Email copiado" : "Copiar email"
+                            }
                             className="ml-auto rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                           >
                             {copied ? (
-                              <Check className="h-4 w-4 text-emerald-400" aria-hidden="true" />
+                              <Check
+                                className="h-4 w-4 text-emerald-400"
+                                aria-hidden="true"
+                              />
                             ) : (
                               <Copy className="h-4 w-4" aria-hidden="true" />
                             )}
@@ -128,8 +146,7 @@ export const Contact = () => {
                     rel="noopener noreferrer"
                     className="p-3 bg-slate-950 border border-slate-800 rounded-xl text-slate-300 hover:text-white hover:border-blue-500/40 transition-colors flex items-center gap-2 text-sm font-medium"
                   >
-                    <GithubIcon className="w-4 h-4" />{" "}
-                    <span>GitHub</span>
+                    <GithubIcon className="w-4 h-4" /> <span>GitHub</span>
                   </a>
                 </div>
               </div>
@@ -147,7 +164,8 @@ export const Contact = () => {
                     ¡Mensaje enviado con éxito!
                   </h3>
                   <p className="text-slate-400 text-sm max-w-md mx-auto">
-                    Gracias por ponerte en contacto. Te responderé lo antes posible a tu correo electrónico.
+                    Gracias por ponerte en contacto. Te responderé lo antes
+                    posible a tu correo electrónico.
                   </p>
                 </div>
               ) : (

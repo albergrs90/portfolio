@@ -10,7 +10,10 @@ export const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo / Marca */}
-          <Link to="/" className="flex items-center gap-2 text-white font-bold text-xl tracking-tight">
+          <Link
+            to="/"
+            className="flex items-center gap-2 text-white font-bold text-xl tracking-tight"
+          >
             <Code2 className="w-6 h-6 text-blue-500" />
             <span>
               Alberto<span className="text-blue-500">.dev</span>
@@ -19,16 +22,28 @@ export const Navbar = () => {
 
           {/* Menú Desktop */}
           <nav className="hidden md:flex items-center gap-8">
-            <Link to="/about" className="text-slate-300 hover:text-blue-400 text-sm font-medium transition-colors">
+            <Link
+              to="/about"
+              className="text-slate-300 hover:text-blue-400 text-sm font-medium transition-colors"
+            >
               Sobre mí
             </Link>
-            <Link to="/skills" className="text-slate-300 hover:text-blue-400 text-sm font-medium transition-colors">
+            <Link
+              to="/skills"
+              className="text-slate-300 hover:text-blue-400 text-sm font-medium transition-colors"
+            >
               Tecnologías
             </Link>
-            <Link to="/projects" className="text-slate-300 hover:text-blue-400 text-sm font-medium transition-colors">
+            <Link
+              to="/projects"
+              className="text-slate-300 hover:text-blue-400 text-sm font-medium transition-colors"
+            >
               Proyectos
             </Link>
-            <Link to="/contact" className="text-slate-300 hover:text-blue-400 text-sm font-medium transition-colors">
+            <Link
+              to="/contact"
+              className="text-slate-300 hover:text-blue-400 text-sm font-medium transition-colors"
+            >
               Contacto
             </Link>
           </nav>
@@ -75,16 +90,32 @@ export const Navbar = () => {
       {/* Desplegable Menú Móvil */}
       {isOpen && (
         <div className="md:hidden bg-slate-900 border-b border-slate-800 px-4 pt-2 pb-4 space-y-2">
-          <Link to="/about" key="about" className="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:text-blue-400 hover:bg-slate-800/50">
+          <Link
+            to="/about"
+            key="about"
+            className="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:text-blue-400 hover:bg-slate-800/50"
+          >
             Sobre mí
           </Link>
-          <Link to="/skills" key="skills" className="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:text-blue-400 hover:bg-slate-800/50">
+          <Link
+            to="/skills"
+            key="skills"
+            className="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:text-blue-400 hover:bg-slate-800/50"
+          >
             Tecnologías
           </Link>
-          <Link to="/projects" key="projects" className="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:text-blue-400 hover:bg-slate-800/50">
+          <Link
+            to="/projects"
+            key="projects"
+            className="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:text-blue-400 hover:bg-slate-800/50"
+          >
             Proyectos
           </Link>
-          <Link to="/contact" key="contact" className="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:text-blue-400 hover:bg-slate-800/50">
+          <Link
+            to="/contact"
+            key="contact"
+            className="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:text-blue-400 hover:bg-slate-800/50"
+          >
             Contacto
           </Link>
         </div>
