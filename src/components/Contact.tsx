@@ -1,26 +1,61 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Mail, Send, CheckCircle, Code2, Copy, Check } from "lucide-react";
 import { GithubIcon } from "./SocialIcons";
+import { supabase } from "../lib/supabase";
 
 export const Contact = () => {
   const [submitted, setSubmitted] = useState(false);
   const EMAIL = "alber.grs@gmail.com";
   const [copied, setCopied] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const copyEmail = async () => {
     try {
       await navigator.clipboard.writeText(EMAIL);
       setCopied(true);
-      window.setTimeout(() => setCopied(false), 2000);
+      useEffect(() => {
+        const timer = setTimeout(() => setCopied(false), 2000);
+        return () => clearTimeout(timer);
+      }, []);
     } catch {
-      window.location.href = `mailto:${EMAIL}`; // fallback si el portapapeles está bloqueado
+      window.location.href = `mailto:${EMAIL}`;
     }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSubmitted(true);
+    setSubmitted(false);
+    setError(null);
+
+    const form = e.target as HTMLFormElement;
+    const nombre = (form.querySelector('input[placeholder="Tu nombre o empresa"]') as HTMLInputElement).value;
+    const email = (form.querySelector('input[placeholder="correo@ejemplo.com"]') as HTMLInputElement).value;
+    const mensaje = (form.querySelector("textarea") as HTMLTextAreaElement).value;
+
+    if (!nombre || !email || !mensaje) {
+      setError("Por favor completa todos los campos");
+      return;
+    }
+
+    try {
+      const { error: dbError } = await supabase.from("mensajes").insert([{ nombre, email, mensaje, leido: false }]);
+
+      if (dbError) throw dbError;
+
+      setSubmitted(true);
+    } catch (err: any) {
+      console.error("Error al guardar mensaje:", err.message);
+      setError("Error al guardar tu mensaje. Inténtalo de nuevo más tarde.");
+    }
   };
+
+  useEffect(() => {
+    // Limpiar el error después de un tiempo si el usuario corrige el formulario
+    if (error) {
+      const timer = setTimeout(() => setError(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
 
   return (
     <section id="contact" className="py-20 md:py-28 relative">
@@ -30,8 +65,7 @@ export const Contact = () => {
             Contacto y <span className="text-blue-500">Colaboración</span>
           </h2>
           <p className="mt-3 text-slate-400 text-lg max-w-xl">
-            ¿Tienes una propuesta laboral, un proyecto en mente o quieres hablar
-            de tecnología? Escríbeme y te responderé lo antes posible.
+            ¿Tienes una propuesta laboral, un proyecto en mente o quieres hablar de tecnología? Escríbeme y te responderé lo antes posible.
           </p>
         </div>
 
@@ -64,16 +98,11 @@ export const Contact = () => {
                           <button
                             type="button"
                             onClick={copyEmail}
-                            aria-label={
-                              copied ? "Email copiado" : "Copiar email"
-                            }
+                            aria-label={copied ? "Email copiado" : "Copiar email"}
                             className="ml-auto rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                           >
                             {copied ? (
-                              <Check
-                                className="h-4 w-4 text-emerald-400"
-                                aria-hidden="true"
-                              />
+                              <Check className="h-4 w-4 text-emerald-400" aria-hidden="true" />
                             ) : (
                               <Copy className="h-4 w-4" aria-hidden="true" />
                             )}
@@ -100,7 +129,6 @@ export const Contact = () => {
                     className="p-3 bg-slate-950 border border-slate-800 rounded-xl text-slate-300 hover:text-white hover:border-blue-500/40 transition-colors flex items-center gap-2 text-sm font-medium"
                   >
                     <GithubIcon className="w-4 h-4" />{" "}
-                    {/* <-- Usamos el icono seguro */}
                     <span>GitHub</span>
                   </a>
                 </div>
@@ -119,8 +147,7 @@ export const Contact = () => {
                     ¡Mensaje enviado con éxito!
                   </h3>
                   <p className="text-slate-400 text-sm max-w-md mx-auto">
-                    Gracias por ponerte en contacto. Te responderé lo antes
-                    posible a tu correo electrónico.
+                    Gracias por ponerte en contacto. Te responderé lo antes posible a tu correo electrónico.
                   </p>
                 </div>
               ) : (
