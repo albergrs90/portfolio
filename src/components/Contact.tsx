@@ -8,11 +8,14 @@ export const Contact = () => {
   const EMAIL = "alber.grs@gmail.com";
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => setCopied(false), 2000);
-    return () => clearTimeout(timer);
-  }, []);
+    if (copied) {
+      const timer = setTimeout(() => setCopied(false), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [copied]);
 
   const copyEmail = async () => {
     try {
@@ -27,47 +30,55 @@ export const Contact = () => {
     e.preventDefault();
     setSubmitted(false);
     setError(null);
-
-    const form = e.target as HTMLFormElement;
-    const nombre = (
-      form.querySelector(
-        'input[placeholder="Tu nombre o empresa"]',
-      ) as HTMLInputElement
-    ).value;
-    const email = (
-      form.querySelector(
-        'input[placeholder="correo@ejemplo.com"]',
-      ) as HTMLInputElement
-    ).value;
-    const mensaje = (form.querySelector("textarea") as HTMLTextAreaElement)
-      .value;
-
-    if (!nombre || !email || !mensaje) {
-      setError("Por favor completa todos los campos");
-      return;
-    }
+    setIsSubmitting(true);
 
     try {
+      const form = e.target as HTMLFormElement;
+      const formData = new FormData(form);
+      const nombre = formData.get("nombre") as string;
+      const email = formData.get("email") as string;
+      const mensaje = formData.get("mensaje") as string;
+
+      if (!nombre || !email || !mensaje) {
+        setError("Por favor completa todos los campos");
+        return;
+      }
+
+      // 1. Guardar en Supabase
       const { error: dbError } = await supabase
-        .from("mensajes")
+        .from("mensajes", { schema: "portfolio" })
         .insert([{ nombre, email, mensaje, leido: false }]);
 
       if (dbError) throw dbError;
 
+      // 2. Enviar email de notificación via Edge Function
+      try {
+        const { error: fnError } = await supabase.functions.invoke(
+          "send-contact-email",
+          {
+            body: { nombre, email, mensaje },
+          },
+        );
+
+        if (fnError) {
+          console.error("Error al enviar email de notificación:", fnError);
+        }
+      } catch (fnErr) {
+        console.error("Error al invocar Edge Function:", fnErr);
+      }
+
+      // 3. Mostrar éxito
       setSubmitted(true);
-    } catch (err: any) {
-      console.error("Error al guardar mensaje:", err.message);
-      setError("Error al guardar tu mensaje. Inténtalo de nuevo más tarde.");
+      form.reset();
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Error desconocido";
+      console.error("Error al enviar mensaje:", errorMessage);
+      setError("Error al enviar tu mensaje. Inténtalo de nuevo más tarde.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
-
-  useEffect(() => {
-    // Limpiar el error después de un tiempo si el usuario corrige el formulario
-    if (error) {
-      const timer = setTimeout(() => setError(null), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [error]);
 
   return (
     <section id="contact" className="py-20 md:py-28 relative">
@@ -167,6 +178,14 @@ export const Contact = () => {
                     Gracias por ponerte en contacto. Te responderé lo antes
                     posible a tu correo electrónico.
                   </p>
+                  <button
+                    onClick={() => {
+                      setSubmitted(false);
+                    }}
+                    className="mt-4 text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors"
+                  >
+                    Enviar otro mensaje
+                  </button>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -176,6 +195,7 @@ export const Contact = () => {
                     </label>
                     <input
                       type="text"
+                      name="nombre"
                       required
                       placeholder="Tu nombre o empresa"
                       className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-blue-500 transition-colors"
@@ -188,6 +208,7 @@ export const Contact = () => {
                     </label>
                     <input
                       type="email"
+                      name="email"
                       required
                       placeholder="correo@ejemplo.com"
                       className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-blue-500 transition-colors"
@@ -200,17 +221,27 @@ export const Contact = () => {
                     </label>
                     <textarea
                       rows={4}
+                      name="mensaje"
                       required
                       placeholder="Cuéntame sobre tu oferta o proyecto..."
                       className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-blue-500 transition-colors resize-none"
                     ></textarea>
                   </div>
 
+                  {error && (
+                    <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-red-400 text-sm">
+                      {error}
+                    </div>
+                  )}
+
                   <button
                     type="submit"
-                    className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-medium py-3.5 rounded-xl transition-all shadow-lg shadow-blue-600/25"
+                    disabled={isSubmitting}
+                    className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-medium py-3.5 rounded-xl transition-all shadow-lg shadow-blue-600/25 disabled:opacity-60 disabled:cursor-not-allowed"
                   >
-                    <span>Enviar Mensaje</span>
+                    <span>
+                      {isSubmitting ? "Enviando..." : "Enviar Mensaje"}
+                    </span>
                     <Send className="w-4 h-4" />
                   </button>
                 </form>
