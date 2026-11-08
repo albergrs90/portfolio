@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Mail, Send, CheckCircle, Code2, Copy, Check } from "lucide-react";
 import { GithubIcon } from "./SocialIcons";
 import { supabase } from "../lib/supabase";
@@ -10,17 +10,33 @@ export const Contact = () => {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Mitigación de spam: tiempo mínimo entre envíos (lado del cliente)
+  const SUBMIT_COOLDOWN_MS = 60_000;
+  const lastSubmitTime = useRef<number>(0);
+
+  // Referencia para el temporizador de "copiado": se inicia al copiar y se
+  // limpia correctamente en cada nueva copia o desmontaje.
+  const copyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Limpiar temporizador al desmontar el componente
   useEffect(() => {
-    if (copied) {
-      const timer = setTimeout(() => setCopied(false), 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [copied]);
+    return () => {
+      if (copyTimer.current) {
+        clearTimeout(copyTimer.current);
+      }
+    };
+  }, []);
 
   const copyEmail = async () => {
+    // Limpiar temporizador previo si existe
+    if (copyTimer.current) {
+      clearTimeout(copyTimer.current);
+    }
+
     try {
       await navigator.clipboard.writeText(EMAIL);
       setCopied(true);
+      copyTimer.current = setTimeout(() => setCopied(false), 2000);
     } catch {
       window.location.href = `mailto:${EMAIL}`;
     }
@@ -39,14 +55,32 @@ export const Contact = () => {
       const email = formData.get("email") as string;
       const mensaje = formData.get("mensaje") as string;
 
-      if (!nombre || !email || !mensaje) {
-        setError("Por favor completa todos los campos");
+      // Honeypot antispam: campo oculto que los bots suelen rellenar. Si tiene
+      // valor, se descarta silenciosamente sin notificar al usuario.
+      const hp = formData.get("hp");
+      if (hp !== null && String(hp).trim() !== "") {
+        setIsSubmitting(false);
         return;
       }
 
-      // 1. Guardar en Supabase
+      if (!nombre || !email || !mensaje) {
+        setError("Por favor completa todos los campos");
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Límite de frecuencia del lado del cliente (antispam básico)
+      const now = Date.now();
+      if (now - lastSubmitTime.current < SUBMIT_COOLDOWN_MS) {
+        setError("Demasiados mensajes. Espera un momento antes de volver a enviar.");
+        setIsSubmitting(false);
+        return;
+      }
+      lastSubmitTime.current = now;
+
+      // 1. Guardar en Supabase (solo INSERT; protegido por RLS)
       const { error: dbError } = await supabase
-        .from("mensajes", { schema: "portfolio" })
+        .from("mensajes")
         .insert([{ nombre, email, mensaje, leido: false }]);
 
       if (dbError) throw dbError;
@@ -70,10 +104,11 @@ export const Contact = () => {
       // 3. Mostrar éxito
       setSubmitted(true);
       form.reset();
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Error desconocido";
-      console.error("Error al enviar mensaje:", errorMessage);
+    } catch (err: unknown) {
+      // err se trata como unknown (nunca `any`). Sus detalles internos no se
+      // loguean ni se exponen al usuario; solo se notifica un error genérico.
+      void err;
+      console.error("Error no controlado en el formulario de contacto");
       setError("Error al enviar tu mensaje. Inténtalo de nuevo más tarde.");
     } finally {
       setIsSubmitting(false);
@@ -106,42 +141,30 @@ export const Contact = () => {
                 </div>
                 <div>
                   <p className="text-xs text-slate-400">Email</p>
-                  <span className="text-sm font-medium text-white">
+                  <div className="flex items-center gap-2">
                     <a
                       href={`mailto:${EMAIL}?subject=${encodeURIComponent("Contacto desde tu portfolio")}`}
-                      className="group flex items-center gap-4 rounded-xl text-slate-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
+                      className="flex items-center gap-1 rounded-xl px-3 py-2 text-sm font-medium text-white transition-colors hover:text-blue-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
                     >
-                      <div className="p-3 bg-blue-600/10 text-blue-400 rounded-xl border border-blue-500/20 transition-colors group-hover:bg-blue-600/20">
-                        <Mail className="w-5 h-5" aria-hidden="true" />
-                      </div>
-                      <div>
-                        <p className="text-xs text-slate-400">Email</p>
-                        <span className="select-all text-sm font-medium text-white transition-colors group-hover:text-blue-400">
-                          {EMAIL}
-
-                          <button
-                            type="button"
-                            onClick={copyEmail}
-                            aria-label={
-                              copied ? "Email copiado" : "Copiar email"
-                            }
-                            className="ml-auto rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-                          >
-                            {copied ? (
-                              <Check
-                                className="h-4 w-4 text-emerald-400"
-                                aria-hidden="true"
-                              />
-                            ) : (
-                              <Copy className="h-4 w-4" aria-hidden="true" />
-                            )}
-                          </button>
-                          <span aria-live="polite" className="sr-only">
-                            {copied ? "Email copiado al portapapeles" : ""}
-                          </span>
-                        </span>
-                      </div>
+                      {EMAIL}
                     </a>
+                    <button
+                      type="button"
+                      onClick={copyEmail}
+                      aria-label={
+                        copied ? "Email copiado" : "Copiar email"
+                      }
+                      className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                    >
+                      {copied ? (
+                        <Check className="h-4 w-4 text-emerald-400" aria-hidden="true" />
+                      ) : (
+                        <Copy className="h-4 w-4" aria-hidden="true" />
+                      )}
+                    </button>
+                  </div>
+                  <span aria-live="polite" className="sr-only">
+                    {copied ? "Email copiado al portapapeles" : ""}
                   </span>
                 </div>
               </div>
@@ -190,46 +213,76 @@ export const Contact = () => {
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
-                    <label className="block text-xs font-medium text-slate-400 mb-1">
+                    <label htmlFor="nombre" className="block text-xs font-medium text-slate-400 mb-1">
                       Nombre
                     </label>
                     <input
                       type="text"
                       name="nombre"
+                      id="nombre"
                       required
+                      autoComplete="name"
+                      aria-describedby={error ? "contact-error" : undefined}
                       placeholder="Tu nombre o empresa"
                       className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-blue-500 transition-colors"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-slate-400 mb-1">
+                    <label htmlFor="email" className="block text-xs font-medium text-slate-400 mb-1">
                       Correo electrónico
                     </label>
                     <input
                       type="email"
                       name="email"
+                      id="email"
                       required
+                      autoComplete="email"
+                      aria-describedby={error ? "contact-error" : undefined}
                       placeholder="correo@ejemplo.com"
                       className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-blue-500 transition-colors"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-slate-400 mb-1">
+                    <label htmlFor="mensaje" className="block text-xs font-medium text-slate-400 mb-1">
                       Mensaje
                     </label>
                     <textarea
-                      rows={4}
+                      id="mensaje"
                       name="mensaje"
+                      rows={4}
                       required
+                      autoComplete="off"
+                      aria-describedby={error ? "contact-error" : undefined}
                       placeholder="Cuéntame sobre tu oferta o proyecto..."
                       className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-blue-500 transition-colors resize-none"
                     ></textarea>
                   </div>
 
+                  {/* Honeypot antispam: campo oculto visualmente. Los bots
+                      suelen rellenarlo; si llega con valor se descarta como spam. */}
+                  <input
+                    type="text"
+                    name="hp"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    aria-hidden="true"
+                    style={{
+                      position: "absolute",
+                      left: "-9999px",
+                      width: "1px",
+                      height: "1px",
+                      overflow: "hidden",
+                    }}
+                  />
+
                   {error && (
-                    <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-red-400 text-sm">
+                    <div
+                      id="contact-error"
+                      className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-red-400 text-sm"
+                      role="alert"
+                    >
                       {error}
                     </div>
                   )}

@@ -1,67 +1,78 @@
 import { Terminal, Code2, Database, Wrench, ShieldCheck } from "lucide-react";
+import type { ReactNode } from "react";
 
-interface SkillCategory {
-  title: string;
-  icon: React.ReactNode;
-  description: string;
-  skills: string[];
+interface Skill {
+  id: string;
+  name: string;
 }
 
-export const Skills = () => {
-  const skillCategories: SkillCategory[] = [
-    {
-      title: "Backend",
-      icon: <Terminal className="w-6 h-6 text-purple-400" />,
-      description:
-        "Desarrollo de APIs RESTful, lógica de negocio y arquitectura del lado del servidor.",
-      skills: [
-        ".NET Core",
-        "C#",
-        "Entity Framework",
-        "REST APIs",
-        "Clean Architecture",
-      ],
-    },
-    {
-      title: "Frontend",
-      icon: <Code2 className="w-6 h-6 text-cyan-400" />,
-      description:
-        "Creación de interfaces de usuario interactivas, modernas y adaptativas.",
-      skills: [
-        "React",
-        "TypeScript",
-        "JavaScript (ES6+)",
-        "Tailwind CSS",
-        "HTML5 / CSS3",
-      ],
-    },
-    {
-      title: "Bases de Datos",
-      icon: <Database className="w-6 h-6 text-amber-400" />,
-      description:
-        "Diseño relacional, modelado de datos y optimización de consultas.",
-      skills: [
-        "SQL Server",
-        "T-SQL",
-        "Diseño de tablas",
-        "Procedimientos Almacenados",
-        "Optimización",
-      ],
-    },
-    {
-      title: "Herramientas y Control de Versiones",
-      icon: <Wrench className="w-6 h-6 text-emerald-400" />,
-      description: "Ecosistema de desarrollo local y colaboración en equipo.",
-      skills: [
-        "Git",
-        "GitHub",
-        "Visual Studio 2022",
-        "VS Code",
-        "Postman / Swagger",
-      ],
-    },
-  ];
+interface SkillCategory {
+  id: string;
+  title: string;
+  icon: ReactNode;
+  description: string;
+  skills: Skill[];
+}
 
+const SKILL_CATEGORIES: SkillCategory[] = [
+  {
+    id: "backend",
+    title: "Backend",
+    icon: <Terminal className="w-6 h-6 text-purple-400" />,
+    description:
+      "Desarrollo de APIs RESTful, lógica de negocio y arquitectura del lado del servidor.",
+    skills: [
+      { id: "dotnet-core", name: ".NET Core" },
+      { id: "csharp", name: "C#" },
+      { id: "entity-framework", name: "Entity Framework" },
+      { id: "rest-apis", name: "REST APIs" },
+      { id: "clean-architecture", name: "Clean Architecture" },
+    ],
+  },
+  {
+    id: "frontend",
+    title: "Frontend",
+    icon: <Code2 className="w-6 h-6 text-cyan-400" />,
+    description:
+      "Creación de interfaces de usuario interactivas, modernas y adaptativas.",
+    skills: [
+      { id: "react", name: "React" },
+      { id: "typescript", name: "TypeScript" },
+      { id: "javascript", name: "JavaScript (ES6+)" },
+      { id: "tailwind-css", name: "Tailwind CSS" },
+      { id: "html-css", name: "HTML5 / CSS3" },
+    ],
+  },
+  {
+    id: "databases",
+    title: "Bases de Datos",
+    icon: <Database className="w-6 h-6 text-amber-400" />,
+    description:
+      "Diseño relacional, modelado de datos y optimización de consultas.",
+    skills: [
+      { id: "sql-server", name: "SQL Server" },
+      { id: "t-sql", name: "T-SQL" },
+      { id: "table-design", name: "Diseño de tablas" },
+      { id: "stored-procedures", name: "Procedimientos Almacenados" },
+      { id: "optimization", name: "Optimización" },
+    ],
+  },
+  {
+    id: "tools",
+    title: "Herramientas y Control de Versiones",
+    icon: <Wrench className="w-6 h-6 text-emerald-400" />,
+    description: "Ecosistema de desarrollo local y colaboración en equipo.",
+    skills: [
+      { id: "git", name: "Git" },
+      { id: "github", name: "GitHub" },
+      { id: "visual-studio", name: "Visual Studio 2022" },
+      { id: "vscode", name: "VS Code" },
+      { id: "postman-swagger", name: "Postman / Swagger" },
+    ],
+  },
+];
+
+export const Skills = () => {
   return (
     <section id="skills" className="py-20 md:py-28 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -78,9 +89,9 @@ export const Skills = () => {
 
         {/* Grid de Tarjetas de Tecnologías */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {skillCategories.map((category, index) => (
+          {SKILL_CATEGORIES.map((category) => (
             <div
-              key={index}
+              key={category.id}
               className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 sm:p-8 hover:border-slate-700/80 transition-all group"
             >
               <div className="flex items-center gap-4 mb-4">
@@ -99,13 +110,13 @@ export const Skills = () => {
 
               {/* Lista de Chips / Badges */}
               <div className="flex flex-wrap gap-2 pt-4 border-t border-slate-800/80">
-                {category.skills.map((skill, skillIndex) => (
+                {category.skills.map((skill) => (
                   <span
-                    key={skillIndex}
+                    key={skill.id}
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 text-sm font-medium hover:border-blue-500/40 hover:text-blue-400 transition-colors"
                   >
                     <ShieldCheck className="w-3.5 h-3.5 text-blue-500/70" />
-                    {skill}
+                    {skill.name}
                   </span>
                 ))}
               </div>

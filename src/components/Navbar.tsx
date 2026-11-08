@@ -1,10 +1,42 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Menu, X, Code2, Mail } from "lucide-react";
 import { Link } from "react-router-dom";
 import { GithubIcon } from "./SocialIcons";
 
+interface NavLink {
+  to: string;
+  label: string;
+}
+
+const NAV_LINKS: NavLink[] = [
+  { to: "/about", label: "Sobre mí" },
+  { to: "/skills", label: "Tecnologías" },
+  { to: "/projects", label: "Proyectos" },
+  { to: "/contact", label: "Contacto" },
+];
+
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+
+  // Cerrar el menú móvil al cambiar de ruta mediante el botón atrás/adelante
+  // del navegador (popstate) o al presionar Escape. Los enlaces del menú
+  // móvil cierran al hacer clic a través de su onClick individual.
+  useEffect(() => {
+    const handlePopState = () => setIsOpen(false);
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+      }
+    };
+    window.addEventListener("popstate", handlePopState);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
+  const toggleMenu = useCallback(() => setIsOpen((prev) => !prev), []);
 
   return (
     <header className="fixed top-0 left-0 w-full bg-slate-900/80 backdrop-blur-md border-b border-slate-800 z-50">
@@ -21,32 +53,17 @@ export const Navbar = () => {
             </span>
           </Link>
 
-          {/* Menú Desktop */}
+          {/* Menú Desktop (generado desde NAV_LINKS) */}
           <nav className="hidden md:flex items-center gap-8">
-            <Link
-              to="/about"
-              className="text-slate-300 hover:text-blue-400 text-sm font-medium transition-colors"
-            >
-              Sobre mí
-            </Link>
-            <Link
-              to="/skills"
-              className="text-slate-300 hover:text-blue-400 text-sm font-medium transition-colors"
-            >
-              Tecnologías
-            </Link>
-            <Link
-              to="/projects"
-              className="text-slate-300 hover:text-blue-400 text-sm font-medium transition-colors"
-            >
-              Proyectos
-            </Link>
-            <Link
-              to="/contact"
-              className="text-slate-300 hover:text-blue-400 text-sm font-medium transition-colors"
-            >
-              Contacto
-            </Link>
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                className="text-slate-300 hover:text-blue-400 text-sm font-medium transition-colors"
+              >
+                {link.label}
+              </Link>
+            ))}
           </nav>
 
           {/* Enlaces a Redes / Contacto Directo */}
@@ -72,9 +89,11 @@ export const Navbar = () => {
           {/* Botón Menú Móvil */}
           <div className="md:hidden flex items-center">
             <button
-              onClick={() => setIsOpen(!isOpen)}
+              onClick={toggleMenu}
               className="text-slate-300 hover:text-white p-2"
-              aria-label="Abrir menú"
+              aria-label={isOpen ? "Cerrar menú" : "Abrir menú"}
+              aria-expanded={isOpen}
+              aria-controls="mobile-menu"
             >
               {isOpen ? (
                 <X className="w-6 h-6" />
@@ -86,37 +105,22 @@ export const Navbar = () => {
         </div>
       </div>
 
-      {/* Desplegable Menú Móvil */}
+      {/* Desplegable Menú Móvil (generado desde NAV_LINKS) */}
       {isOpen && (
-        <div className="md:hidden bg-slate-900 border-b border-slate-800 px-4 pt-2 pb-4 space-y-2">
-          <Link
-            to="/about"
-            key="about"
-            className="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:text-blue-400 hover:bg-slate-800/50"
-          >
-            Sobre mí
-          </Link>
-          <Link
-            to="/skills"
-            key="skills"
-            className="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:text-blue-400 hover:bg-slate-800/50"
-          >
-            Tecnologías
-          </Link>
-          <Link
-            to="/projects"
-            key="projects"
-            className="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:text-blue-400 hover:bg-slate-800/50"
-          >
-            Proyectos
-          </Link>
-          <Link
-            to="/contact"
-            key="contact"
-            className="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:text-blue-400 hover:bg-slate-800/50"
-          >
-            Contacto
-          </Link>
+        <div
+          id="mobile-menu"
+          className="md:hidden bg-slate-900 border-b border-slate-800 px-4 pt-2 pb-4 space-y-2"
+        >
+          {NAV_LINKS.map((link) => (
+            <Link
+              key={link.to}
+              to={link.to}
+              className="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:text-blue-400 hover:bg-slate-800/50"
+              onClick={() => setIsOpen(false)}
+            >
+              {link.label}
+            </Link>
+          ))}
         </div>
       )}
     </header>

@@ -1,6 +1,7 @@
 import { ExternalLink, Code2 } from "lucide-react";
 
 interface Project {
+  id: string;
   title: string;
   description: string;
   tags: string[];
@@ -9,35 +10,38 @@ interface Project {
   featured?: boolean;
 }
 
-export const Projects = () => {
-  const projectsList: Project[] = [
-    {
-      title: "SmartMatch HR (Recruiter AI)",
-      description:
-        "Aplicación web full-stack diseñada para analizar currículums de candidatos frente a los requisitos de una oferta de empleo utilizando IA, optimizando los procesos de selección técnica.",
-      tags: ["React", ".NET Core", "TypeScript", "Tailwind CSS", "Supabase"],
-      githubUrl: "https://github.com/albergrs90",
-      featured: true,
-    },
-    {
-      title: "Gestión y Automatización de Gimnasios",
-      description:
-        "Plataforma colaborativa orientada al registro, control y automatización de rutinas de entrenamiento, gestión de usuarios y métricas de rendimiento físico.",
-      tags: ["React", "TypeScript", "SQL Server", "Tailwind CSS"],
-      githubUrl: "https://github.com/albergrs90/GymAutomation",
-      featured: true,
-    },
-    {
-      title: "Berta Quiromasajista (Web Comercial)",
-      description:
-        "Sitio web comercial profesional con panel de administración integrado y gestión de reservas y servicios para un negocio real de quiromasaje.",
-      tags: ["React", "Tailwind CSS", "Supabase", "Netlify"],
-      githubUrl: "https://github.com/albergrs90",
-      liveUrl: "https://bertaquiromasajista.netlify.app/",
-      featured: true,
-    },
-  ];
+const PROJECTS: Project[] = [
+  {
+    id: "smartmatch-hr",
+    title: "SmartMatch HR (Recruiter AI)",
+    description:
+      "Aplicación web full-stack diseñada para analizar currículums de candidatos frente a los requisitos de una oferta de empleo utilizando IA, optimizando los procesos de selección técnica.",
+    tags: ["React", ".NET Core", "TypeScript", "Tailwind CSS", "Supabase"],
+    githubUrl: "https://github.com/albergrs90",
+    featured: true,
+  },
+  {
+    id: "gym-automation",
+    title: "Gestión y Automatización de Gimnasios",
+    description:
+      "Plataforma colaborativa orientada al registro, control y automatización de rutinas de entrenamiento, gestión de usuarios y métricas de rendimiento físico.",
+    tags: ["React", "TypeScript", "SQL Server", "Tailwind CSS"],
+    githubUrl: "https://github.com/albergrs90/GymAutomation",
+    featured: true,
+  },
+  {
+    id: "berta-quietomasajista",
+    title: "Berta Quiromasajista (Web Comercial)",
+    description:
+      "Sitio web comercial profesional con panel de administración integrado y gestión de reservas y servicios para un negocio real de quiromasaje.",
+    tags: ["React", "Tailwind CSS", "Supabase", "Netlify"],
+    githubUrl: "https://github.com/albergrs90",
+    liveUrl: "https://bertaquiromasajista.netlify.app/",
+    featured: true,
+  },
+];
 
+export const Projects = () => {
   return (
     <section
       id="projects"
@@ -57,9 +61,9 @@ export const Projects = () => {
 
         {/* Grid de Proyectos */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {projectsList.map((project, index) => (
+          {PROJECTS.map((project) => (
             <div
-              key={index}
+              key={project.id}
               className="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 flex flex-col justify-between hover:border-blue-500/40 transition-all group shadow-lg"
             >
               <div>
@@ -106,9 +110,9 @@ export const Projects = () => {
               {/* Tecnologías / Badges */}
               <div className="pt-4 border-t border-slate-800/80">
                 <div className="flex flex-wrap gap-1.5">
-                  {project.tags.map((tag, tagIndex) => (
+                  {project.tags.map((tag) => (
                     <span
-                      key={tagIndex}
+                      key={tag}
                       className="px-2.5 py-1 rounded-md bg-slate-950 border border-slate-800/80 text-slate-300 text-xs font-medium"
                     >
                       {tag}

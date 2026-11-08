@@ -1,13 +1,63 @@
 import { Terminal, Database, Code2, CheckCircle2 } from "lucide-react";
+import type { ReactNode } from "react";
+
+interface Highlight {
+  id: string;
+  text: string;
+}
+
+interface TechStackItem {
+  id: string;
+  title: string;
+  description: string;
+  icon: ReactNode;
+  colorClass: string;
+}
+
+const HIGHLIGHTS: Highlight[] = [
+  {
+    id: "fullstack",
+    text: "Experiencia sólida en desarrollo Full-Stack con .NET Core y React.",
+  },
+  {
+    id: "databases",
+    text: "Diseño y optimización de bases de datos relacionales con SQL Server.",
+  },
+  {
+    id: "clean-code",
+    text: "Enfoque en código limpio, mantenible y escalable.",
+  },
+  {
+    id: "adaptability",
+    text: "Capacidad para adaptarme a retos tanto corporativos como freelance.",
+  },
+];
+
+const TECH_STACK: TechStackItem[] = [
+  {
+    id: "backend",
+    title: "Backend",
+    description: ".NET Core · C# · APIs RESTful",
+    icon: <Terminal className="w-6 h-6" />,
+    colorClass: "bg-purple-500/10 text-purple-400",
+  },
+  {
+    id: "frontend",
+    title: "Frontend",
+    description: "React · TypeScript · Tailwind CSS",
+    icon: <Code2 className="w-6 h-6" />,
+    colorClass: "bg-cyan-500/10 text-cyan-400",
+  },
+  {
+    id: "database",
+    title: "Base de Datos",
+    description: "SQL Server · Modelado · Consultas",
+    icon: <Database className="w-6 h-6" />,
+    colorClass: "bg-amber-500/10 text-amber-400",
+  },
+];
 
 export const About = () => {
-  const highlights = [
-    "Experiencia sólida en desarrollo Full-Stack con .NET Core y React.",
-    "Diseño y optimización de bases de datos relacionales con SQL Server.",
-    "Enfoque en código limpio, mantenible y escalable.",
-    "Capacidad para adaptarme a retos tanto corporativos como freelance.",
-  ];
-
   return (
     <section
       id="about"
@@ -54,10 +104,10 @@ export const About = () => {
 
             {/* Lista de puntos clave */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4">
-              {highlights.map((item, index) => (
-                <div key={index} className="flex items-start gap-3">
+              {HIGHLIGHTS.map((highlight) => (
+                <div key={highlight.id} className="flex items-start gap-3">
                   <CheckCircle2 className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
-                  <span className="text-sm text-slate-300">{item}</span>
+                  <span className="text-sm text-slate-300">{highlight.text}</span>
                 </div>
               ))}
             </div>
@@ -74,41 +124,22 @@ export const About = () => {
               </h4>
 
               <div className="space-y-4">
-                <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800/80 flex items-center gap-4">
-                  <div className="p-3 bg-purple-500/10 rounded-lg text-purple-400">
-                    <Terminal className="w-6 h-6" />
+                {TECH_STACK.map((item) => (
+                  <div
+                    key={item.id}
+                    className="p-4 rounded-xl bg-slate-950/60 border border-slate-800/80 flex items-center gap-4"
+                  >
+                    <div className={`p-3 rounded-lg ${item.colorClass}`}>
+                      {item.icon}
+                    </div>
+                    <div>
+                      <h5 className="text-white font-medium">{item.title}</h5>
+                      <p className="text-xs text-slate-400">
+                        {item.description}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h5 className="text-white font-medium">Backend</h5>
-                    <p className="text-xs text-slate-400">
-                      .NET Core · C# · APIs RESTful
-                    </p>
-                  </div>
-                </div>
-
-                <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800/80 flex items-center gap-4">
-                  <div className="p-3 bg-cyan-500/10 rounded-lg text-cyan-400">
-                    <Code2 className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h5 className="text-white font-medium">Frontend</h5>
-                    <p className="text-xs text-slate-400">
-                      React · TypeScript · Tailwind CSS
-                    </p>
-                  </div>
-                </div>
-
-                <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800/80 flex items-center gap-4">
-                  <div className="p-3 bg-amber-500/10 rounded-lg text-amber-400">
-                    <Database className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h5 className="text-white font-medium">Base de Datos</h5>
-                    <p className="text-xs text-slate-400">
-                      SQL Server · Modelado · Consultas
-                    </p>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
           </div>
