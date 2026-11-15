@@ -10,6 +10,7 @@ import { About } from "./components/About";
 import { Skills } from "./components/Skills";
 import { NotFound } from "./components/NotFound";
 import { ErrorBoundary } from "./components/ErrorBoundary";
+import { ScrollToTop } from "./components/ScrollToTop";
 
 const Projects = lazy(() => import("./components/Projects").then((mod) => ({ default: mod.Projects })));
 const ProjectsDetail = lazy(
@@ -21,6 +22,7 @@ const Contact = lazy(() => import("./components/Contact").then((mod) => ({ defau
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <div className="min-h-dvh bg-slate-950 text-slate-100 antialiased selection:bg-blue-500 selection:text-white">
         <Navbar />
         <main>
@@ -32,7 +34,7 @@ function App() {
                 <Route path="/process" element={<Process />} />
                 <Route path="/skills" element={<Skills />} />
                 <Route path="/projects" element={<Projects />} />
-                <Route path="/projects/:projectId" element={<ProjectsDetail />} />
+                <Route path="/projects/:slug" element={<ProjectsDetail />} />
                 <Route path="/contact" element={<Contact />} />
                 {/* Ruta 404 */}
                 <Route path="*" element={<NotFound />} />

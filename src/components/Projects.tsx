@@ -1,47 +1,17 @@
-import { ExternalLink, Code2 } from "lucide-react";
+import { ArrowRight, ExternalLink } from "lucide-react";
+import { Link } from "react-router-dom";
+import { GithubIcon } from "./SocialIcons";
+import { PROJECTS } from "../data/projects";
 
-interface Project {
-  id: string;
-  title: string;
-  description: string;
-  tags: string[];
-  githubUrl: string;
-  liveUrl?: string;
-  featured?: boolean;
-}
-
-const PROJECTS: Project[] = [
-  {
-    id: "smartmatch-hr",
-    title: "SmartMatch HR (Recruiter AI)",
-    description:
-      "Aplicación web full-stack diseñada para analizar currículums de candidatos frente a los requisitos de una oferta de empleo utilizando IA, optimizando los procesos de selección técnica.",
-    tags: ["React", ".NET Core", "TypeScript", "Tailwind CSS", "Supabase"],
-    githubUrl: "https://github.com/albergrs90",
-    featured: true,
-  },
-  {
-    id: "gym-automation",
-    title: "Gestión y Automatización de Gimnasios",
-    description:
-      "Plataforma colaborativa orientada al registro, control y automatización de rutinas de entrenamiento, gestión de usuarios y métricas de rendimiento físico.",
-    tags: ["React", "TypeScript", "SQL Server", "Tailwind CSS"],
-    githubUrl: "https://github.com/albergrs90/GymAutomation",
-    featured: true,
-  },
-  {
-    id: "berta-quietomasajista",
-    title: "Berta Quiromasajista (Web Comercial)",
-    description:
-      "Sitio web comercial profesional con panel de administración integrado y gestión de reservas y servicios para un negocio real de quiromasaje.",
-    tags: ["React", "Tailwind CSS", "Supabase", "Netlify"],
-    githubUrl: "https://github.com/albergrs90",
-    liveUrl: "https://bertaquiromasajista.netlify.app/",
-    featured: true,
-  },
-];
+const STATUS_STYLES: Record<string, string> = {
+  "En producción":
+    "border-emerald-500/30 bg-emerald-500/10 text-emerald-300",
+  Demo: "border-amber-500/30 bg-amber-500/10 text-amber-300",
+};
 
 export const Projects = () => {
+  const featured = PROJECTS.filter((project) => project.featured);
+
   return (
     <section
       id="projects"
@@ -50,77 +20,130 @@ export const Projects = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Cabecera de la sección */}
         <div className="flex flex-col items-center text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
-            Proyectos <span className="text-blue-500">Destacados</span>
-          </h2>
-          <p className="mt-3 text-slate-400 text-lg max-w-xl">
-            Una selección de aplicaciones web y desarrollos recientes
-            construidos con .NET Core, React y bases de datos relacionales.
+          <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
+            Proyectos <span className="text-blue-500">seleccionados</span>
+          </h1>
+          <p className="mt-3 text-slate-400 text-lg max-w-2xl">
+            Productos propios y proyectos de cliente, en producción o con demo
+            pública. Cada ficha cuenta el problema, las decisiones técnicas y
+            qué haría después.
           </p>
         </div>
 
         {/* Grid de Proyectos */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {PROJECTS.map((project) => (
-            <div
-              key={project.id}
-              className="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 flex flex-col justify-between hover:border-blue-500/40 transition-all group shadow-lg"
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+          {featured.map((project) => (
+            <article
+              key={project.slug}
+              className="group relative flex flex-col overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-slate-700 hover:shadow-2xl"
             >
-              <div>
-                {/* Cabecera de la tarjeta */}
-                <div className="flex items-center justify-between mb-4">
-                  <div className="p-3 bg-blue-600/10 text-blue-400 rounded-xl border border-blue-500/20 group-hover:bg-blue-600/20 transition-colors">
-                    <Code2 className="w-6 h-6" />
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <a
-                      href={project.githubUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-slate-400 hover:text-white transition-colors p-1"
-                      aria-label="Ver repositorio en GitHub"
-                    >
-                      <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
-                      </svg>
-                    </a>
-                    {project.liveUrl && (
-                      <a
-                        href={project.liveUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-slate-400 hover:text-blue-400 transition-colors p-1"
-                        aria-label="Ver demo en vivo"
-                      >
-                        <ExternalLink className="w-5 h-5" />
-                      </a>
-                    )}
-                  </div>
-                </div>
+              {/* Enlace estirado: toda la tarjeta abre el caso de estudio. Los
+                  enlaces externos van por encima con z-20. */}
+              <Link
+                to={`/projects/${project.slug}`}
+                className="absolute inset-0 z-10 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+              >
+                <span className="sr-only">
+                  Ver el caso de estudio de {project.name}
+                </span>
+              </Link>
 
-                {/* Título y Descripción */}
-                <h3 className="text-xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">
-                  {project.title}
-                </h3>
-                <p className="text-slate-400 text-sm leading-relaxed mb-6">
-                  {project.description}
-                </p>
+              <div className="relative aspect-[16/10] overflow-hidden bg-slate-950">
+                <img
+                  src={project.cover.src}
+                  alt={project.cover.alt}
+                  width={project.cover.width}
+                  height={project.cover.height}
+                  loading="lazy"
+                  decoding="async"
+                  className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.03]"
+                />
+                <div
+                  className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/20 to-transparent"
+                  aria-hidden="true"
+                />
+                <div className="absolute left-4 top-4 flex flex-wrap items-center gap-2">
+                  <span
+                    className={`rounded-full border px-2.5 py-1 text-[11px] font-semibold ${STATUS_STYLES[project.status]}`}
+                  >
+                    {project.status}
+                  </span>
+                  <span className="rounded-full border border-slate-700/70 bg-slate-950/70 px-2.5 py-1 text-[11px] font-medium text-slate-300 backdrop-blur-sm">
+                    {project.year}
+                  </span>
+                </div>
               </div>
 
-              {/* Tecnologías / Badges */}
-              <div className="pt-4 border-t border-slate-800/80">
-                <div className="flex flex-wrap gap-1.5">
-                  {project.tags.map((tag) => (
+              <div className="flex flex-1 flex-col p-6">
+                <p
+                  className="text-[11px] font-semibold uppercase tracking-[0.18em]"
+                  style={{ color: project.accent }}
+                >
+                  {project.kind}
+                </p>
+
+                <h2 className="mt-2 text-xl font-bold text-white">
+                  {project.name}
+                </h2>
+                <p className="mt-1 text-sm font-medium text-slate-200">
+                  {project.tagline}
+                </p>
+                <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-slate-400">
+                  {project.summary}
+                </p>
+
+                <div className="mt-5 flex flex-wrap gap-1.5">
+                  {project.stack.slice(0, 4).map((tech) => (
                     <span
-                      key={tag}
-                      className="px-2.5 py-1 rounded-md bg-slate-950 border border-slate-800/80 text-slate-300 text-xs font-medium"
+                      key={tech}
+                      className="rounded-md border border-slate-800 bg-slate-950 px-2 py-1 text-[11px] font-medium text-slate-300"
                     >
-                      {tag}
+                      {tech}
                     </span>
                   ))}
                 </div>
+
+                <div className="mt-auto pt-6">
+                  <div className="flex items-center justify-between border-t border-slate-800/80 pt-5">
+                    <span className="inline-flex items-center gap-1.5 text-sm font-medium text-blue-400 transition-colors group-hover:text-blue-300">
+                      Ver caso
+                      <ArrowRight
+                        className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
+                        aria-hidden="true"
+                      />
+                    </span>
+
+                    <div className="relative z-20 flex items-center gap-1">
+                      {project.links.repo && (
+                        <a
+                          href={project.links.repo}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={`Repositorio de ${project.name} en GitHub`}
+                          className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                        >
+                          <GithubIcon className="h-4 w-4" />
+                        </a>
+                      )}
+                      {project.links.live && (
+                        <a
+                          href={project.links.live}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={`Abrir la demo de ${project.name}`}
+                          className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                        >
+                          <ExternalLink
+                            className="h-4 w-4"
+                            aria-hidden="true"
+                          />
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
+            </article>
           ))}
         </div>
       </div>
