@@ -9,7 +9,6 @@ import { Hero } from "./components/Hero";
 import { About } from "./components/About";
 import { Skills } from "./components/Skills";
 import { NotFound } from "./components/NotFound";
-import { Contact } from "./components/Contact";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 
 const Projects = lazy(() => import("./components/Projects").then((mod) => ({ default: mod.Projects })));
@@ -17,6 +16,7 @@ const ProjectsDetail = lazy(
   () => import("./components/ProjectsDetail").then((mod) => ({ default: mod.ProjectsDetail }))
 );
 const Process = lazy(() => import("./components/Process").then((mod) => ({ default: mod.Process })));
+const Contact = lazy(() => import("./components/Contact").then((mod) => ({ default: mod.Contact })));
 
 function App() {
   return (

@@ -1,17 +1,34 @@
 import { useState, useEffect, useRef } from "react";
 import { Mail, Send, CheckCircle, Code2, Copy, Check } from "lucide-react";
 import { GithubIcon } from "./SocialIcons";
-import { supabase } from "../lib/supabase";
+import { sendContactMessage } from "../lib/contact";
+import type { ContactFailureReason } from "../lib/contact";
+
+const EMAIL = "alber.grs@gmail.com";
+
+// Mitigación de spam en cliente (la comprobación real está en la Edge Function).
+const SUBMIT_COOLDOWN_MS = 60_000;
+
+const ERROR_MESSAGES: Record<ContactFailureReason, string> = {
+  config:
+    "El formulario no está disponible ahora mismo. Escríbeme directamente al email de abajo.",
+  "rate-limit":
+    "Has enviado varios mensajes seguidos. Espera un minuto antes de volver a intentarlo.",
+  validation:
+    "Revisa los datos: el email no parece válido o algún campo es demasiado largo.",
+  network:
+    "No se pudo conectar con el servidor. Comprueba tu conexión o escríbeme directamente.",
+  server:
+    "No se pudo enviar el mensaje. Inténtalo de nuevo en unos minutos o escríbeme directamente.",
+};
 
 export const Contact = () => {
   const [submitted, setSubmitted] = useState(false);
-  const EMAIL = "alber.grs@gmail.com";
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Mitigación de spam: tiempo mínimo entre envíos (lado del cliente)
-  const SUBMIT_COOLDOWN_MS = 60_000;
+  // Evita dobles envíos accidentales sin bloquear un reintento tras un fallo.
   const lastSubmitTime = useRef<number>(0);
 
   // Referencia para el temporizador de "copiado": se inicia al copiar y se
@@ -46,73 +63,49 @@ export const Contact = () => {
     e.preventDefault();
     setSubmitted(false);
     setError(null);
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    const nombre = String(formData.get("nombre") ?? "").trim();
+    const email = String(formData.get("email") ?? "").trim();
+    const mensaje = String(formData.get("mensaje") ?? "").trim();
+    const hp = String(formData.get("hp") ?? "").trim();
+
+    // Honeypot antispam: campo oculto que los bots suelen rellenar. Si tiene
+    // valor, se descarta silenciosamente sin notificar al usuario.
+    if (hp !== "") {
+      return;
+    }
+
+    if (!nombre || !email || !mensaje) {
+      setError("Por favor completa todos los campos");
+      return;
+    }
+
+    // Límite de frecuencia del lado del cliente (antispam básico)
+    if (Date.now() - lastSubmitTime.current < SUBMIT_COOLDOWN_MS) {
+      setError(ERROR_MESSAGES["rate-limit"]);
+      return;
+    }
+
     setIsSubmitting(true);
 
-    try {
-      const form = e.target as HTMLFormElement;
-      const formData = new FormData(form);
-      const nombre = formData.get("nombre") as string;
-      const email = formData.get("email") as string;
-      const mensaje = formData.get("mensaje") as string;
+    // Una sola petición: la Edge Function guarda en Supabase y envía el email.
+    const result = await sendContactMessage({ nombre, email, mensaje });
 
-      // Honeypot antispam: campo oculto que los bots suelen rellenar. Si tiene
-      // valor, se descarta silenciosamente sin notificar al usuario.
-      const hp = formData.get("hp");
-      if (hp !== null && String(hp).trim() !== "") {
-        setIsSubmitting(false);
-        return;
-      }
+    setIsSubmitting(false);
 
-      if (!nombre || !email || !mensaje) {
-        setError("Por favor completa todos los campos");
-        setIsSubmitting(false);
-        return;
-      }
-
-      // Límite de frecuencia del lado del cliente (antispam básico)
-      const now = Date.now();
-      if (now - lastSubmitTime.current < SUBMIT_COOLDOWN_MS) {
-        setError("Demasiados mensajes. Espera un momento antes de volver a enviar.");
-        setIsSubmitting(false);
-        return;
-      }
-      lastSubmitTime.current = now;
-
-      // 1. Guardar en Supabase (solo INSERT; protegido por RLS)
-      const { error: dbError } = await supabase
-        .from("mensajes")
-        .insert([{ nombre, email, mensaje, leido: false }]);
-
-      if (dbError) throw dbError;
-
-      // 2. Enviar email de notificación via Edge Function
-      try {
-        const { error: fnError } = await supabase.functions.invoke(
-          "send-contact-email",
-          {
-            body: { nombre, email, mensaje },
-          },
-        );
-
-        if (fnError) {
-          console.error("Error al enviar email de notificación:", fnError);
-        }
-      } catch (fnErr) {
-        console.error("Error al invocar Edge Function:", fnErr);
-      }
-
-      // 3. Mostrar éxito
-      setSubmitted(true);
-      form.reset();
-    } catch (err: unknown) {
-      // err se trata como unknown (nunca `any`). Sus detalles internos no se
-      // loguean ni se exponen al usuario; solo se notifica un error genérico.
-      void err;
-      console.error("Error no controlado en el formulario de contacto");
-      setError("Error al enviar tu mensaje. Inténtalo de nuevo más tarde.");
-    } finally {
-      setIsSubmitting(false);
+    if (!result.ok) {
+      setError(ERROR_MESSAGES[result.reason]);
+      return;
     }
+
+    // Solo arrancamos el cooldown cuando el envío se ha confirmado, para que un
+    // fallo de red no impida reintentar de inmediato.
+    lastSubmitTime.current = Date.now();
+    setSubmitted(true);
+    form.reset();
   };
 
   return (
@@ -221,6 +214,7 @@ export const Contact = () => {
                       name="nombre"
                       id="nombre"
                       required
+                      maxLength={100}
                       autoComplete="name"
                       aria-describedby={error ? "contact-error" : undefined}
                       placeholder="Tu nombre o empresa"
@@ -237,6 +231,7 @@ export const Contact = () => {
                       name="email"
                       id="email"
                       required
+                      maxLength={254}
                       autoComplete="email"
                       aria-describedby={error ? "contact-error" : undefined}
                       placeholder="correo@ejemplo.com"
@@ -253,6 +248,7 @@ export const Contact = () => {
                       name="mensaje"
                       rows={4}
                       required
+                      maxLength={5000}
                       autoComplete="off"
                       aria-describedby={error ? "contact-error" : undefined}
                       placeholder="Cuéntame sobre tu oferta o proyecto..."
@@ -283,7 +279,13 @@ export const Contact = () => {
                       className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-red-400 text-sm"
                       role="alert"
                     >
-                      {error}
+                      <p>{error}</p>
+                      <a
+                        href={`mailto:${EMAIL}?subject=${encodeURIComponent("Contacto desde tu portfolio")}`}
+                        className="mt-1 inline-block font-medium underline underline-offset-2 hover:text-red-300"
+                      >
+                        Escríbeme a {EMAIL}
+                      </a>
                     </div>
                   )}
 
