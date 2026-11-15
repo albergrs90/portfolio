@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { GithubIcon } from "./SocialIcons";
+import { usePageMeta } from "../hooks/usePageMeta";
 
 interface Scenario {
   id: string;
@@ -108,18 +109,23 @@ const AI_POINTS = [
   "Reviso sus propuestas y valido los resultados antes de incorporarlos.",
 ];
 
-export const Process = () => {
+export const HowIWork = () => {
+  usePageMeta(
+    "Cómo trabajo · Alberto García Ríos",
+    "Cómo afronto un proyecto, una ampliación, un error o una mejora de rendimiento: entender el problema, decidir, implementar y verificar, con apoyo de agentes de IA.",
+  );
+
   return (
     <section
-      id="process"
-      aria-labelledby="process-title"
+      id="how-i-work"
+      aria-labelledby="how-i-work-title"
       className="py-20 md:py-28 relative"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Cabecera de la sección */}
         <div className="flex flex-col items-center text-center mb-16">
           <h1
-            id="process-title"
+            id="how-i-work-title"
             className="text-3xl sm:text-4xl font-bold text-white tracking-tight"
           >
             Así convierto una idea en{" "}

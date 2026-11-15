@@ -10,7 +10,7 @@ interface NavLink {
 
 const NAV_LINKS: NavLink[] = [
   { to: "/about", label: "Sobre mí" },
-  { to: "/process", label: "Proceso" },
+  { to: "/como-trabajo", label: "Cómo trabajo" },
   { to: "/skills", label: "Tecnologías" },
   { to: "/projects", label: "Proyectos" },
   { to: "/contact", label: "Contacto" },
@@ -55,7 +55,7 @@ export const Navbar = () => {
           </Link>
 
           {/* Menú Desktop (generado desde NAV_LINKS) */}
-          <nav className="hidden md:flex items-center gap-4 lg:gap-6">
+          <nav className="hidden md:flex items-center gap-3 lg:gap-6">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.to}
@@ -68,12 +68,12 @@ export const Navbar = () => {
           </nav>
 
           {/* Enlaces a Redes / Contacto Directo */}
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-2 lg:gap-4">
             <a
               href="https://github.com/albergrs90"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-slate-400 hover:text-white transition-colors p-2"
+              className="hidden lg:inline-flex text-slate-400 hover:text-white transition-colors p-2"
               aria-label="GitHub"
             >
               <GithubIcon className="w-5 h-5" />

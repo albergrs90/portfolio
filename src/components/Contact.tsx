@@ -1,17 +1,35 @@
 import { useState, useEffect, useRef } from "react";
-import { Mail, Send, CheckCircle, Code2, Copy, Check } from "lucide-react";
-import { GithubIcon } from "./SocialIcons";
+import {
+  Mail,
+  Send,
+  CheckCircle,
+  Copy,
+  Check,
+  MapPin,
+  Clock,
+  Phone,
+  ExternalLink,
+} from "lucide-react";
+import { GithubIcon, LinkedinIcon } from "./SocialIcons";
 import { sendContactMessage } from "../lib/contact";
 import type { ContactFailureReason } from "../lib/contact";
+import { PROFILE } from "../data/about";
+import { usePageMeta } from "../hooks/usePageMeta";
 
-const EMAIL = "alber.grs@gmail.com";
+const EMAIL = PROFILE.email;
 
 // Mitigación de spam en cliente (la comprobación real está en la Edge Function).
 const SUBMIT_COOLDOWN_MS = 60_000;
 
+// El mapa se carga al pulsar: así no hay cookies de Google ni peticiones de
+// terceros en la carga inicial.
+const MAP_SRC = `https://www.google.com/maps?q=${encodeURIComponent(
+  "Sevilla, España",
+)}&z=12&output=embed`;
+
 const ERROR_MESSAGES: Record<ContactFailureReason, string> = {
   config:
-    "El formulario no está disponible ahora mismo. Escríbeme directamente al email de abajo.",
+    "El formulario no está disponible ahora mismo. Escríbeme directamente a mi email.",
   "rate-limit":
     "Has enviado varios mensajes seguidos. Espera un minuto antes de volver a intentarlo.",
   validation:
@@ -22,11 +40,20 @@ const ERROR_MESSAGES: Record<ContactFailureReason, string> = {
     "No se pudo enviar el mensaje. Inténtalo de nuevo en unos minutos o escríbeme directamente.",
 };
 
+const CONTACT_ROW_ICON =
+  "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border";
+
 export const Contact = () => {
+  usePageMeta(
+    "Contacto · Alberto García Ríos",
+    "Escríbeme para una propuesta laboral, un proyecto o una colaboración. Email, teléfono y LinkedIn de Alberto García Ríos, desarrollador full-stack en Sevilla.",
+  );
+
   const [submitted, setSubmitted] = useState(false);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [mapOpen, setMapOpen] = useState(false);
 
   // Evita dobles envíos accidentales sin bloquear un reintento tras un fallo.
   const lastSubmitTime = useRef<number>(0);
@@ -112,84 +139,27 @@ export const Contact = () => {
     <section id="contact" className="py-20 md:py-28 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
-            Contacto y <span className="text-blue-500">Colaboración</span>
-          </h2>
+          <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
+            Contacto y <span className="text-blue-500">colaboración</span>
+          </h1>
           <p className="mt-3 text-slate-400 text-lg max-w-xl">
             ¿Tienes una propuesta laboral, un proyecto en mente o quieres hablar
             de tecnología? Escríbeme y te responderé lo antes posible.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 max-w-5xl mx-auto">
-          <div className="lg:col-span-5 space-y-6">
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6">
-              <h3 className="text-xl font-bold text-white">
-                Información directa
-              </h3>
-
-              <div className="flex items-center gap-4 text-slate-300">
-                <div className="p-3 bg-blue-600/10 text-blue-400 rounded-xl border border-blue-500/20">
-                  <Mail className="w-5 h-5" />
-                </div>
-                <div>
-                  <p className="text-xs text-slate-400">Email</p>
-                  <div className="flex items-center gap-2">
-                    <a
-                      href={`mailto:${EMAIL}?subject=${encodeURIComponent("Contacto desde tu portfolio")}`}
-                      className="flex items-center gap-1 rounded-xl px-3 py-2 text-sm font-medium text-white transition-colors hover:text-blue-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
-                    >
-                      {EMAIL}
-                    </a>
-                    <button
-                      type="button"
-                      onClick={copyEmail}
-                      aria-label={
-                        copied ? "Email copiado" : "Copiar email"
-                      }
-                      className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-                    >
-                      {copied ? (
-                        <Check className="h-4 w-4 text-emerald-400" aria-hidden="true" />
-                      ) : (
-                        <Copy className="h-4 w-4" aria-hidden="true" />
-                      )}
-                    </button>
-                  </div>
-                  <span aria-live="polite" className="sr-only">
-                    {copied ? "Email copiado al portapapeles" : ""}
-                  </span>
-                </div>
-              </div>
-
-              <div className="pt-6 border-t border-slate-800/80">
-                <h4 className="text-sm font-medium text-slate-400 mb-4">
-                  Perfiles profesionales
-                </h4>
-                <div className="flex items-center gap-3">
-                  <a
-                    href="https://github.com/albergrs90"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-3 bg-slate-950 border border-slate-800 rounded-xl text-slate-300 hover:text-white hover:border-blue-500/40 transition-colors flex items-center gap-2 text-sm font-medium"
-                  >
-                    <GithubIcon className="w-4 h-4" /> <span>GitHub</span>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="lg:col-span-7">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 max-w-5xl mx-auto">
+          {/* Formulario primero en móvil */}
+          <div className="order-1 lg:order-2 lg:col-span-7">
             <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl">
               {submitted ? (
                 <div className="py-12 text-center space-y-4">
                   <div className="w-12 h-12 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center mx-auto border border-emerald-500/20">
-                    <CheckCircle className="w-6 h-6" />
+                    <CheckCircle className="w-6 h-6" aria-hidden="true" />
                   </div>
-                  <h3 className="text-xl font-bold text-white">
+                  <h2 className="text-xl font-bold text-white">
                     ¡Mensaje enviado con éxito!
-                  </h3>
+                  </h2>
                   <p className="text-slate-400 text-sm max-w-md mx-auto">
                     Gracias por ponerte en contacto. Te responderé lo antes
                     posible a tu correo electrónico.
@@ -198,7 +168,7 @@ export const Contact = () => {
                     onClick={() => {
                       setSubmitted(false);
                     }}
-                    className="mt-4 text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors"
+                    className="mt-4 text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                   >
                     Enviar otro mensaje
                   </button>
@@ -292,34 +262,177 @@ export const Contact = () => {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-medium py-3.5 rounded-xl transition-all shadow-lg shadow-blue-600/25 disabled:opacity-60 disabled:cursor-not-allowed"
+                    className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-medium py-3.5 rounded-xl transition-all shadow-lg shadow-blue-600/25 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
                   >
                     <span>
                       {isSubmitting ? "Enviando..." : "Enviar Mensaje"}
                     </span>
-                    <Send className="w-4 h-4" />
+                    <Send className="w-4 h-4" aria-hidden="true" />
                   </button>
+
+                  <p className="text-xs leading-relaxed text-slate-500">
+                    Tus datos se usan solo para responderte. No se comparten con
+                    terceros.
+                  </p>
                 </form>
+              )}
+            </div>
+          </div>
+
+          {/* Otras vías de contacto */}
+          <div className="order-2 lg:order-1 lg:col-span-5 space-y-6">
+            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8">
+              <h2 className="text-xl font-bold text-white">
+                Otras formas de contactar
+              </h2>
+              <p className="mt-1.5 text-sm text-slate-400">
+                Respondo en 24–48 h laborables.
+              </p>
+
+              <ul className="mt-5 divide-y divide-slate-800/80">
+                <li className="flex items-center gap-3 py-3">
+                  <span
+                    className={`${CONTACT_ROW_ICON} border-blue-500/20 bg-blue-600/10 text-blue-400`}
+                  >
+                    <Mail className="h-4 w-4" aria-hidden="true" />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs text-slate-500">Email</p>
+                    <a
+                      href={`mailto:${EMAIL}?subject=${encodeURIComponent("Contacto desde tu portfolio")}`}
+                      className="block truncate text-sm font-medium text-white transition-colors hover:text-blue-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                    >
+                      {EMAIL}
+                    </a>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={copyEmail}
+                    aria-label={copied ? "Email copiado" : "Copiar email"}
+                    className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                  >
+                    {copied ? (
+                      <Check className="h-4 w-4 text-emerald-400" aria-hidden="true" />
+                    ) : (
+                      <Copy className="h-4 w-4" aria-hidden="true" />
+                    )}
+                  </button>
+                  <span aria-live="polite" className="sr-only">
+                    {copied ? "Email copiado al portapapeles" : ""}
+                  </span>
+                </li>
+
+                <li className="flex items-center gap-3 py-3">
+                  <span
+                    className={`${CONTACT_ROW_ICON} border-emerald-500/20 bg-emerald-500/10 text-emerald-400`}
+                  >
+                    <Phone className="h-4 w-4" aria-hidden="true" />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs text-slate-500">Teléfono</p>
+                    <a
+                      href={PROFILE.phoneHref}
+                      className="block text-sm font-medium text-white transition-colors hover:text-emerald-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                    >
+                      {PROFILE.phoneDisplay}
+                    </a>
+                  </div>
+                </li>
+
+                <li className="flex items-center gap-3 py-3">
+                  <span
+                    className={`${CONTACT_ROW_ICON} border-sky-500/20 bg-sky-500/10 text-sky-400`}
+                  >
+                    <LinkedinIcon className="h-4 w-4" />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs text-slate-500">LinkedIn</p>
+                    <a
+                      href={PROFILE.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1 truncate text-sm font-medium text-white transition-colors hover:text-sky-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                    >
+                      alberto-garcia-rios
+                      <ExternalLink className="h-3 w-3 shrink-0" aria-hidden="true" />
+                      <span className="sr-only">(se abre en una pestaña nueva)</span>
+                    </a>
+                  </div>
+                </li>
+
+                <li className="flex items-center gap-3 py-3">
+                  <span
+                    className={`${CONTACT_ROW_ICON} border-slate-700/60 bg-slate-800/60 text-slate-300`}
+                  >
+                    <GithubIcon className="h-4 w-4" />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs text-slate-500">GitHub</p>
+                    <a
+                      href={PROFILE.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1 truncate text-sm font-medium text-white transition-colors hover:text-slate-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                    >
+                      albergrs90
+                      <ExternalLink className="h-3 w-3 shrink-0" aria-hidden="true" />
+                      <span className="sr-only">(se abre en una pestaña nueva)</span>
+                    </a>
+                  </div>
+                </li>
+              </ul>
+
+              <div className="mt-4 space-y-2 border-t border-slate-800/80 pt-4 text-sm text-slate-400">
+                <p className="flex items-center gap-2.5">
+                  <MapPin
+                    className="h-4 w-4 shrink-0 text-slate-500"
+                    aria-hidden="true"
+                  />
+                  Sevilla, España · Remoto
+                </p>
+                <p className="flex items-center gap-2.5">
+                  <Clock
+                    className="h-4 w-4 shrink-0 text-slate-500"
+                    aria-hidden="true"
+                  />
+                  CET (UTC+1) · Español nativo, inglés B1
+                </p>
+              </div>
+            </div>
+
+            {/* Mapa: se carga solo al pulsar, sin cookies previas */}
+            <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900">
+              {mapOpen ? (
+                <iframe
+                  src={MAP_SRC}
+                  title="Mapa de Sevilla"
+                  className="aspect-[16/10] w-full border-0"
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  allowFullScreen
+                />
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setMapOpen(true)}
+                  className="group flex aspect-[16/10] w-full flex-col items-center justify-center gap-2 bg-[radial-gradient(circle_at_50%_35%,rgba(37,99,235,0.14),transparent_65%)] transition-colors hover:bg-slate-800/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500"
+                >
+                  <MapPin
+                    className="h-6 w-6 text-blue-400 transition-transform group-hover:-translate-y-0.5"
+                    aria-hidden="true"
+                  />
+                  <span className="text-sm font-medium text-white">
+                    Abrir mapa de Sevilla
+                  </span>
+                  <span className="text-xs text-slate-500">
+                    Carga Google Maps solo si lo abres
+                  </span>
+                </button>
               )}
             </div>
           </div>
         </div>
       </div>
-
-      <footer className="mt-28 border-t border-slate-800/80 pt-8 pb-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-          <div className="flex items-center gap-2 text-white font-bold text-base">
-            <Code2 className="w-5 h-5 text-blue-500" />
-            <span>
-              Alberto<span className="text-blue-500">.dev</span>
-            </span>
-          </div>
-          <p className="text-slate-500 text-xs">
-            © {new Date().getFullYear()} Alberto García Ríos. Construido con
-            React, TypeScript y Tailwind CSS.
-          </p>
-        </div>
-      </footer>
     </section>
   );
 };

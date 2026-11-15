@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   ArrowLeft,
@@ -10,6 +9,7 @@ import {
 import { GithubIcon } from "./SocialIcons";
 import { NotFound } from "./NotFound";
 import { PROJECTS, getProjectBySlug } from "../data/projects";
+import { usePageMeta } from "../hooks/usePageMeta";
 
 const STATUS_STYLES: Record<string, string> = {
   "En producción":
@@ -24,24 +24,12 @@ export const ProjectsDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const project = slug ? getProjectBySlug(slug) : undefined;
 
-  // Título y descripción propios por proyecto; se restauran al desmontar.
-  useEffect(() => {
-    if (!project) return;
-
-    const previousTitle = document.title;
-    const meta = document.querySelector('meta[name="description"]');
-    const previousDescription = meta?.getAttribute("content") ?? null;
-
-    document.title = `${project.name} · ${project.tagline} | Alberto García Ríos`;
-    meta?.setAttribute("content", project.summary);
-
-    return () => {
-      document.title = previousTitle;
-      if (meta && previousDescription !== null) {
-        meta.setAttribute("content", previousDescription);
-      }
-    };
-  }, [project]);
+  usePageMeta(
+    project
+      ? `${project.name} · ${project.tagline} | Alberto García Ríos`
+      : "Proyecto no encontrado · Alberto García Ríos",
+    project?.summary,
+  );
 
   if (!project) {
     return <NotFound />;

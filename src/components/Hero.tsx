@@ -8,8 +8,14 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import fotoFondo from "../images/fotolinkedin.webp";
+import { DEFAULT_DESCRIPTION, usePageMeta } from "../hooks/usePageMeta";
 
 export const Hero = () => {
+  usePageMeta(
+    "Alberto García Ríos | Desarrollador Full-Stack .NET & React",
+    DEFAULT_DESCRIPTION,
+  );
+
   return (
     <section
       id="hero"
@@ -86,11 +92,11 @@ export const Hero = () => {
           {/* Botones de Acción (CTAs) */}
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
             <Link
-              to="/process"
+              to="/como-trabajo"
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-medium px-6 py-3.5 rounded-xl transition-all shadow-lg shadow-blue-600/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
             >
               <Workflow className="w-4 h-4" aria-hidden="true" />
-              <span>Ver mi proceso</span>
+              <span>Cómo trabajo</span>
               <ArrowRight className="w-4 h-4" aria-hidden="true" />
             </Link>
 

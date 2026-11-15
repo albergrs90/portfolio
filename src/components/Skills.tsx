@@ -1,5 +1,6 @@
 import { Terminal, Code2, Database, Wrench, ShieldCheck } from "lucide-react";
 import type { ReactNode } from "react";
+import { usePageMeta } from "../hooks/usePageMeta";
 
 interface Skill {
   id: string;
@@ -73,14 +74,19 @@ const SKILL_CATEGORIES: SkillCategory[] = [
 ];
 
 export const Skills = () => {
+  usePageMeta(
+    "Tecnologías · Alberto García Ríos",
+    "Stack de Alberto García Ríos: .NET Core, C#, React, TypeScript, SQL Server, Azure AD, Azure DevOps, Git y agentes de IA aplicados al desarrollo.",
+  );
+
   return (
     <section id="skills" className="py-20 md:py-28 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Cabecera de la sección */}
         <div className="flex flex-col items-center text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
+          <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
             Tecnologías y <span className="text-blue-500">Habilidades</span>
-          </h2>
+          </h1>
           <p className="mt-3 text-slate-400 text-lg max-w-xl">
             Herramientas y tecnologías que utilizo en mi día a día para
             construir proyectos de principio a fin.

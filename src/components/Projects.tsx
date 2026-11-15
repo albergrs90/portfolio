@@ -2,6 +2,7 @@ import { ArrowRight, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
 import { GithubIcon } from "./SocialIcons";
 import { PROJECTS } from "../data/projects";
+import { usePageMeta } from "../hooks/usePageMeta";
 
 const STATUS_STYLES: Record<string, string> = {
   "En producción":
@@ -10,6 +11,11 @@ const STATUS_STYLES: Record<string, string> = {
 };
 
 export const Projects = () => {
+  usePageMeta(
+    "Proyectos · Alberto García Ríos",
+    "Casos de estudio de RecruiterAI, Berta Masajista y Lumina Invoice: problema, decisiones técnicas, resultados y qué haría después.",
+  );
+
   const featured = PROJECTS.filter((project) => project.featured);
 
   return (
