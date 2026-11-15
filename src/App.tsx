@@ -16,6 +16,7 @@ const Projects = lazy(() => import("./components/Projects").then((mod) => ({ def
 const ProjectsDetail = lazy(
   () => import("./components/ProjectsDetail").then((mod) => ({ default: mod.ProjectsDetail }))
 );
+const Process = lazy(() => import("./components/Process").then((mod) => ({ default: mod.Process })));
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<Hero />} />
                 <Route path="/about" element={<About />} />
+                <Route path="/process" element={<Process />} />
                 <Route path="/skills" element={<Skills />} />
                 <Route path="/projects" element={<Projects />} />
                 <Route path="/projects/:projectId" element={<ProjectsDetail />} />

@@ -10,6 +10,7 @@ interface NavLink {
 
 const NAV_LINKS: NavLink[] = [
   { to: "/about", label: "Sobre mí" },
+  { to: "/process", label: "Proceso" },
   { to: "/skills", label: "Tecnologías" },
   { to: "/projects", label: "Proyectos" },
   { to: "/contact", label: "Contacto" },
@@ -54,7 +55,7 @@ export const Navbar = () => {
           </Link>
 
           {/* Menú Desktop (generado desde NAV_LINKS) */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden md:flex items-center gap-4 lg:gap-6">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.to}
