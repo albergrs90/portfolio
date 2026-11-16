@@ -1,7 +1,8 @@
-import { Code2, Mail } from "lucide-react";
+import { Mail } from "lucide-react";
 import { Link } from "react-router-dom";
 import { GithubIcon, LinkedinIcon } from "./SocialIcons";
 import { PROFILE } from "../data/about";
+import { CONTAINER } from "./ui";
 
 const FOOTER_LINKS = [
   { to: "/about", label: "Sobre mí" },
@@ -11,107 +12,74 @@ const FOOTER_LINKS = [
   { to: "/contact", label: "Contacto" },
 ];
 
+const SOCIAL_LINK =
+  "text-muted transition-colors hover:text-ink";
+
 export const Footer = () => {
   return (
-    <footer className="border-t border-slate-800/80 bg-slate-950">
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="grid gap-10 md:grid-cols-12">
-          <div className="md:col-span-5">
-            <Link
-              to="/"
-              className="inline-flex items-center gap-2 text-lg font-bold tracking-tight text-white"
-            >
-              <Code2 className="h-5 w-5 text-blue-500" aria-hidden="true" />
-              <span>
-                Alberto<span className="text-blue-500">.dev</span>
-              </span>
-            </Link>
-            <p className="mt-3 max-w-sm text-sm leading-relaxed text-slate-400">
-              Desarrollador full-stack en Sevilla. Aplicaciones web con .NET
-              Core, React y SQL Server, y agentes de IA aplicados al desarrollo.
-            </p>
-            <div className="mt-5 flex items-center gap-2">
-              <a
-                href={PROFILE.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="GitHub"
-                className="rounded-lg border border-slate-800 p-2 text-slate-400 transition-colors hover:border-slate-700 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-              >
-                <GithubIcon className="h-4 w-4" />
-              </a>
-              <a
-                href={PROFILE.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="LinkedIn"
-                className="rounded-lg border border-slate-800 p-2 text-slate-400 transition-colors hover:border-slate-700 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-              >
-                <LinkedinIcon className="h-4 w-4" />
-              </a>
-              <a
-                href={`mailto:${PROFILE.email}`}
-                aria-label={`Escribir a ${PROFILE.email}`}
-                className="rounded-lg border border-slate-800 p-2 text-slate-400 transition-colors hover:border-slate-700 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-              >
-                <Mail className="h-4 w-4" />
-              </a>
-            </div>
-          </div>
+    <footer className="border-t border-line">
+      <div
+        className={`${CONTAINER} flex flex-col gap-8 py-10 md:flex-row md:items-center md:justify-between`}
+      >
+        <Link to="/" className="flex items-center gap-3" aria-label="Inicio">
+          <span className="flex h-8 w-8 items-center justify-center rounded-md border border-line-strong font-display text-base italic leading-none text-ink">
+            AG
+          </span>
+          <span className="text-sm text-ink">
+            Alberto García <span className="text-muted">Ríos</span>
+          </span>
+        </Link>
 
-          <nav
-            className="md:col-span-3"
-            aria-label="Enlaces del pie de página"
+        <nav aria-label="Enlaces del pie de página">
+          <ul className="flex flex-wrap gap-x-5 gap-y-2">
+            {FOOTER_LINKS.map((link) => (
+              <li key={link.to}>
+                <Link
+                  to={link.to}
+                  className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted transition-colors hover:text-ink"
+                >
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <div className="flex items-center gap-4">
+          <a
+            href={PROFILE.github}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="GitHub"
+            className={SOCIAL_LINK}
           >
-            <h2 className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-500">
-              Navegación
-            </h2>
-            <ul className="mt-4 space-y-2.5">
-              {FOOTER_LINKS.map((link) => (
-                <li key={link.to}>
-                  <Link
-                    to={link.to}
-                    className="text-sm text-slate-400 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-
-          <div className="md:col-span-4">
-            <h2 className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-500">
-              Contacto
-            </h2>
-            <ul className="mt-4 space-y-2.5 text-sm text-slate-400">
-              <li>
-                <a
-                  href={`mailto:${PROFILE.email}`}
-                  className="transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-                >
-                  {PROFILE.email}
-                </a>
-              </li>
-              <li>
-                <a
-                  href={PROFILE.phoneHref}
-                  className="transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-                >
-                  {PROFILE.phoneDisplay}
-                </a>
-              </li>
-              <li>
-                {PROFILE.location} · {PROFILE.modality}
-              </li>
-            </ul>
-          </div>
+            <GithubIcon className="h-4 w-4" />
+          </a>
+          <a
+            href={PROFILE.linkedin}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="LinkedIn"
+            className={SOCIAL_LINK}
+          >
+            <LinkedinIcon className="h-4 w-4" />
+          </a>
+          <a
+            href={`mailto:${PROFILE.email}`}
+            aria-label={`Escribir a ${PROFILE.email}`}
+            className={SOCIAL_LINK}
+          >
+            <Mail className="h-4 w-4" />
+          </a>
         </div>
+      </div>
 
-        <div className="mt-10 flex flex-col gap-2 border-t border-slate-800/80 pt-6 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+      <div className="border-t border-line">
+        <div
+          className={`${CONTAINER} flex flex-col gap-1 py-4 font-mono text-[10px] uppercase tracking-[0.14em] text-muted sm:flex-row sm:items-center sm:justify-between`}
+        >
           <p>
-            © {new Date().getFullYear()} {PROFILE.name}. Hecho con React,
-            TypeScript y Tailwind CSS.
+            © {new Date().getFullYear()} {PROFILE.name}
           </p>
           <p>
             {PROFILE.location} · {PROFILE.modality}

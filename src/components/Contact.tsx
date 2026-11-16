@@ -1,20 +1,22 @@
 import { useState, useEffect, useRef } from "react";
 import {
-  Mail,
-  Send,
-  CheckCircle,
-  Copy,
   Check,
-  MapPin,
+  CheckCircle,
   Clock,
-  Phone,
+  Copy,
   ExternalLink,
+  Mail,
+  MapPin,
+  Phone,
+  Send,
 } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "./SocialIcons";
+import { PageHeader } from "./PageHeader";
 import { sendContactMessage } from "../lib/contact";
 import type { ContactFailureReason } from "../lib/contact";
 import { PROFILE } from "../data/about";
 import { usePageMeta } from "../hooks/usePageMeta";
+import { BTN_PRIMARY, CONTAINER, LABEL } from "./ui";
 
 const EMAIL = PROFILE.email;
 
@@ -40,8 +42,10 @@ const ERROR_MESSAGES: Record<ContactFailureReason, string> = {
     "No se pudo enviar el mensaje. Inténtalo de nuevo en unos minutos o escríbeme directamente.",
 };
 
-const CONTACT_ROW_ICON =
-  "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border";
+const FIELD =
+  "w-full rounded-none border-0 border-b border-line bg-transparent px-0 py-3 text-sm text-ink placeholder:text-white/25 transition-colors focus:border-white/30 focus:outline-none";
+
+const ROW_ICON = "shrink-0 text-muted";
 
 export const Contact = () => {
   usePageMeta(
@@ -62,7 +66,6 @@ export const Contact = () => {
   // limpia correctamente en cada nueva copia o desmontaje.
   const copyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Limpiar temporizador al desmontar el componente
   useEffect(() => {
     return () => {
       if (copyTimer.current) {
@@ -72,7 +75,6 @@ export const Contact = () => {
   }, []);
 
   const copyEmail = async () => {
-    // Limpiar temporizador previo si existe
     if (copyTimer.current) {
       clearTimeout(copyTimer.current);
     }
@@ -136,171 +138,159 @@ export const Contact = () => {
   };
 
   return (
-    <section id="contact" className="py-20 md:py-28 relative">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col items-center text-center mb-16">
-          <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
-            Contacto y <span className="text-blue-500">colaboración</span>
-          </h1>
-          <p className="mt-3 text-slate-400 text-lg max-w-xl">
-            ¿Tienes una propuesta laboral, un proyecto en mente o quieres hablar
-            de tecnología? Escríbeme y te responderé lo antes posible.
-          </p>
-        </div>
+    <div className="pb-24 pt-28 sm:pt-32">
+      <PageHeader
+        index="05"
+        label="Contacto"
+        title={
+          <>
+            Cuéntame el <span className="italic">problema</span>.
+          </>
+        }
+        description="¿Una propuesta laboral, un proyecto en mente o simplemente hablar de tecnología? Escríbeme y te responderé en 24–48 h laborables."
+      />
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 max-w-5xl mx-auto">
+      <div className={CONTAINER}>
+        <div className="grid gap-14 pt-14 lg:grid-cols-12 lg:gap-16">
           {/* Formulario primero en móvil */}
           <div className="order-1 lg:order-2 lg:col-span-7">
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl">
-              {submitted ? (
-                <div className="py-12 text-center space-y-4">
-                  <div className="w-12 h-12 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center mx-auto border border-emerald-500/20">
-                    <CheckCircle className="w-6 h-6" aria-hidden="true" />
-                  </div>
-                  <h2 className="text-xl font-bold text-white">
-                    ¡Mensaje enviado con éxito!
-                  </h2>
-                  <p className="text-slate-400 text-sm max-w-md mx-auto">
-                    Gracias por ponerte en contacto. Te responderé lo antes
-                    posible a tu correo electrónico.
-                  </p>
-                  <button
-                    onClick={() => {
-                      setSubmitted(false);
-                    }}
-                    className="mt-4 text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-                  >
-                    Enviar otro mensaje
-                  </button>
-                </div>
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div>
-                    <label htmlFor="nombre" className="block text-xs font-medium text-slate-400 mb-1">
-                      Nombre
-                    </label>
-                    <input
-                      type="text"
-                      name="nombre"
-                      id="nombre"
-                      required
-                      maxLength={100}
-                      autoComplete="name"
-                      aria-describedby={error ? "contact-error" : undefined}
-                      placeholder="Tu nombre o empresa"
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-blue-500 transition-colors"
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="email" className="block text-xs font-medium text-slate-400 mb-1">
-                      Correo electrónico
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      id="email"
-                      required
-                      maxLength={254}
-                      autoComplete="email"
-                      aria-describedby={error ? "contact-error" : undefined}
-                      placeholder="correo@ejemplo.com"
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-blue-500 transition-colors"
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="mensaje" className="block text-xs font-medium text-slate-400 mb-1">
-                      Mensaje
-                    </label>
-                    <textarea
-                      id="mensaje"
-                      name="mensaje"
-                      rows={4}
-                      required
-                      maxLength={5000}
-                      autoComplete="off"
-                      aria-describedby={error ? "contact-error" : undefined}
-                      placeholder="Cuéntame sobre tu oferta o proyecto..."
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-blue-500 transition-colors resize-none"
-                    ></textarea>
-                  </div>
-
-                  {/* Honeypot antispam: campo oculto visualmente. Los bots
-                      suelen rellenarlo; si llega con valor se descarta como spam. */}
+            {submitted ? (
+              <div className="border-t border-line pt-10">
+                <CheckCircle
+                  className="h-6 w-6 text-emerald-400"
+                  aria-hidden="true"
+                />
+                <h2 className="mt-4 font-display text-3xl text-ink">
+                  Mensaje enviado
+                </h2>
+                <p className="mt-3 max-w-md text-sm leading-relaxed text-muted">
+                  Gracias por escribir. Te responderé lo antes posible al correo
+                  que me has dejado.
+                </p>
+                <button
+                  onClick={() => setSubmitted(false)}
+                  className="mt-6 text-sm font-medium text-ink underline underline-offset-4 transition-colors hover:text-white"
+                >
+                  Enviar otro mensaje
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-8">
+                <div>
+                  <label htmlFor="nombre" className={`${LABEL} block`}>
+                    Nombre
+                  </label>
                   <input
                     type="text"
-                    name="hp"
-                    tabIndex={-1}
-                    autoComplete="off"
-                    aria-hidden="true"
-                    style={{
-                      position: "absolute",
-                      left: "-9999px",
-                      width: "1px",
-                      height: "1px",
-                      overflow: "hidden",
-                    }}
+                    name="nombre"
+                    id="nombre"
+                    required
+                    maxLength={100}
+                    autoComplete="name"
+                    aria-describedby={error ? "contact-error" : undefined}
+                    placeholder="Tu nombre o empresa"
+                    className={FIELD}
                   />
+                </div>
 
-                  {error && (
-                    <div
-                      id="contact-error"
-                      className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-red-400 text-sm"
-                      role="alert"
-                    >
-                      <p>{error}</p>
-                      <a
-                        href={`mailto:${EMAIL}?subject=${encodeURIComponent("Contacto desde tu portfolio")}`}
-                        className="mt-1 inline-block font-medium underline underline-offset-2 hover:text-red-300"
-                      >
-                        Escríbeme a {EMAIL}
-                      </a>
-                    </div>
-                  )}
+                <div>
+                  <label htmlFor="email" className={`${LABEL} block`}>
+                    Correo electrónico
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    id="email"
+                    required
+                    maxLength={254}
+                    autoComplete="email"
+                    aria-describedby={error ? "contact-error" : undefined}
+                    placeholder="correo@ejemplo.com"
+                    className={FIELD}
+                  />
+                </div>
 
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-medium py-3.5 rounded-xl transition-all shadow-lg shadow-blue-600/25 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
+                <div>
+                  <label htmlFor="mensaje" className={`${LABEL} block`}>
+                    Mensaje
+                  </label>
+                  <textarea
+                    id="mensaje"
+                    name="mensaje"
+                    rows={5}
+                    required
+                    maxLength={5000}
+                    autoComplete="off"
+                    aria-describedby={error ? "contact-error" : undefined}
+                    placeholder="Cuéntame qué necesitas..."
+                    className={`${FIELD} resize-none`}
+                  ></textarea>
+                </div>
+
+                {/* Honeypot antispam */}
+                <input
+                  type="text"
+                  name="hp"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  style={{
+                    position: "absolute",
+                    left: "-9999px",
+                    width: "1px",
+                    height: "1px",
+                    overflow: "hidden",
+                  }}
+                />
+
+                {error && (
+                  <div
+                    id="contact-error"
+                    className="rounded-lg border border-red-500/20 bg-red-500/5 px-4 py-3 text-sm text-red-300"
+                    role="alert"
                   >
-                    <span>
-                      {isSubmitting ? "Enviando..." : "Enviar Mensaje"}
-                    </span>
-                    <Send className="w-4 h-4" aria-hidden="true" />
-                  </button>
-
-                  <p className="text-xs leading-relaxed text-slate-500">
-                    Tus datos se usan solo para responderte. No se comparten con
-                    terceros.
-                  </p>
-                </form>
-              )}
-            </div>
-          </div>
-
-          {/* Otras vías de contacto */}
-          <div className="order-2 lg:order-1 lg:col-span-5 space-y-6">
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8">
-              <h2 className="text-xl font-bold text-white">
-                Otras formas de contactar
-              </h2>
-              <p className="mt-1.5 text-sm text-slate-400">
-                Respondo en 24–48 h laborables.
-              </p>
-
-              <ul className="mt-5 divide-y divide-slate-800/80">
-                <li className="flex items-center gap-3 py-3">
-                  <span
-                    className={`${CONTACT_ROW_ICON} border-blue-500/20 bg-blue-600/10 text-blue-400`}
-                  >
-                    <Mail className="h-4 w-4" aria-hidden="true" />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs text-slate-500">Email</p>
+                    <p>{error}</p>
                     <a
                       href={`mailto:${EMAIL}?subject=${encodeURIComponent("Contacto desde tu portfolio")}`}
-                      className="block truncate text-sm font-medium text-white transition-colors hover:text-blue-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                      className="mt-1 inline-block font-medium underline underline-offset-2 hover:text-red-200"
+                    >
+                      Escríbeme a {EMAIL}
+                    </a>
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className={`${BTN_PRIMARY} w-full py-3.5`}
+                >
+                  <span>{isSubmitting ? "Enviando..." : "Enviar mensaje"}</span>
+                  <Send className="h-4 w-4" aria-hidden="true" />
+                </button>
+
+                <p className="font-mono text-[10px] leading-relaxed text-muted">
+                  Tus datos se usan solo para responderte. No se comparten con
+                  terceros.
+                </p>
+              </form>
+            )}
+          </div>
+
+          {/* Otras vías */}
+          <aside className="order-2 space-y-10 lg:order-1 lg:col-span-5">
+            <div>
+              <h2 className="border-b border-line pb-4 font-display text-2xl text-ink">
+                Otras formas de contactar
+              </h2>
+
+              <ul>
+                <li className="flex items-center gap-3 border-b border-line py-3.5">
+                  <Mail className={ROW_ICON} aria-hidden="true" />
+                  <div className="min-w-0 flex-1">
+                    <p className={LABEL}>Email</p>
+                    <a
+                      href={`mailto:${EMAIL}?subject=${encodeURIComponent("Contacto desde tu portfolio")}`}
+                      className="mt-1 block truncate text-sm text-ink transition-colors hover:text-white"
                     >
                       {EMAIL}
                     </a>
@@ -309,10 +299,13 @@ export const Contact = () => {
                     type="button"
                     onClick={copyEmail}
                     aria-label={copied ? "Email copiado" : "Copiar email"}
-                    className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                    className="rounded-md p-2 text-muted transition-colors hover:bg-white/[0.04] hover:text-ink"
                   >
                     {copied ? (
-                      <Check className="h-4 w-4 text-emerald-400" aria-hidden="true" />
+                      <Check
+                        className="h-4 w-4 text-emerald-400"
+                        aria-hidden="true"
+                      />
                     ) : (
                       <Copy className="h-4 w-4" aria-hidden="true" />
                     )}
@@ -322,86 +315,78 @@ export const Contact = () => {
                   </span>
                 </li>
 
-                <li className="flex items-center gap-3 py-3">
-                  <span
-                    className={`${CONTACT_ROW_ICON} border-emerald-500/20 bg-emerald-500/10 text-emerald-400`}
-                  >
-                    <Phone className="h-4 w-4" aria-hidden="true" />
-                  </span>
+                <li className="flex items-center gap-3 border-b border-line py-3.5">
+                  <Phone className={ROW_ICON} aria-hidden="true" />
                   <div className="min-w-0 flex-1">
-                    <p className="text-xs text-slate-500">Teléfono</p>
+                    <p className={LABEL}>Teléfono</p>
                     <a
                       href={PROFILE.phoneHref}
-                      className="block text-sm font-medium text-white transition-colors hover:text-emerald-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                      className="mt-1 block text-sm text-ink transition-colors hover:text-white"
                     >
                       {PROFILE.phoneDisplay}
                     </a>
                   </div>
                 </li>
 
-                <li className="flex items-center gap-3 py-3">
-                  <span
-                    className={`${CONTACT_ROW_ICON} border-sky-500/20 bg-sky-500/10 text-sky-400`}
-                  >
-                    <LinkedinIcon className="h-4 w-4" />
-                  </span>
+                <li className="flex items-center gap-3 border-b border-line py-3.5">
+                  <LinkedinIcon className={`h-4 w-4 ${ROW_ICON}`} />
                   <div className="min-w-0 flex-1">
-                    <p className="text-xs text-slate-500">LinkedIn</p>
+                    <p className={LABEL}>LinkedIn</p>
                     <a
                       href={PROFILE.linkedin}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-1 truncate text-sm font-medium text-white transition-colors hover:text-sky-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                      className="mt-1 flex items-center gap-1 text-sm text-ink transition-colors hover:text-white"
                     >
                       alberto-garcia-rios
-                      <ExternalLink className="h-3 w-3 shrink-0" aria-hidden="true" />
-                      <span className="sr-only">(se abre en una pestaña nueva)</span>
+                      <ExternalLink
+                        className="h-3 w-3 shrink-0 text-muted"
+                        aria-hidden="true"
+                      />
+                      <span className="sr-only">
+                        (se abre en una pestaña nueva)
+                      </span>
                     </a>
                   </div>
                 </li>
 
-                <li className="flex items-center gap-3 py-3">
-                  <span
-                    className={`${CONTACT_ROW_ICON} border-slate-700/60 bg-slate-800/60 text-slate-300`}
-                  >
-                    <GithubIcon className="h-4 w-4" />
-                  </span>
+                <li className="flex items-center gap-3 border-b border-line py-3.5">
+                  <GithubIcon className={`h-4 w-4 ${ROW_ICON}`} />
                   <div className="min-w-0 flex-1">
-                    <p className="text-xs text-slate-500">GitHub</p>
+                    <p className={LABEL}>GitHub</p>
                     <a
                       href={PROFILE.github}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-1 truncate text-sm font-medium text-white transition-colors hover:text-slate-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                      className="mt-1 flex items-center gap-1 text-sm text-ink transition-colors hover:text-white"
                     >
                       albergrs90
-                      <ExternalLink className="h-3 w-3 shrink-0" aria-hidden="true" />
-                      <span className="sr-only">(se abre en una pestaña nueva)</span>
+                      <ExternalLink
+                        className="h-3 w-3 shrink-0 text-muted"
+                        aria-hidden="true"
+                      />
+                      <span className="sr-only">
+                        (se abre en una pestaña nueva)
+                      </span>
                     </a>
                   </div>
                 </li>
               </ul>
 
-              <div className="mt-4 space-y-2 border-t border-slate-800/80 pt-4 text-sm text-slate-400">
+              <div className="mt-5 space-y-2 text-sm text-muted">
                 <p className="flex items-center gap-2.5">
-                  <MapPin
-                    className="h-4 w-4 shrink-0 text-slate-500"
-                    aria-hidden="true"
-                  />
+                  <MapPin className={ROW_ICON} aria-hidden="true" />
                   Sevilla, España · Remoto
                 </p>
                 <p className="flex items-center gap-2.5">
-                  <Clock
-                    className="h-4 w-4 shrink-0 text-slate-500"
-                    aria-hidden="true"
-                  />
+                  <Clock className={ROW_ICON} aria-hidden="true" />
                   CET (UTC+1) · Español nativo, inglés B1
                 </p>
               </div>
             </div>
 
-            {/* Mapa: se carga solo al pulsar, sin cookies previas */}
-            <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900">
+            {/* Mapa diferido */}
+            <div className="overflow-hidden rounded-xl border border-line bg-raised">
               {mapOpen ? (
                 <iframe
                   src={MAP_SRC}
@@ -415,24 +400,24 @@ export const Contact = () => {
                 <button
                   type="button"
                   onClick={() => setMapOpen(true)}
-                  className="group flex aspect-[16/10] w-full flex-col items-center justify-center gap-2 bg-[radial-gradient(circle_at_50%_35%,rgba(37,99,235,0.14),transparent_65%)] transition-colors hover:bg-slate-800/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500"
+                  className="group flex aspect-[16/10] w-full flex-col items-center justify-center gap-2 bg-[radial-gradient(circle_at_50%_35%,rgba(79,124,255,0.12),transparent_65%)] transition-colors hover:bg-white/[0.02]"
                 >
                   <MapPin
-                    className="h-6 w-6 text-blue-400 transition-transform group-hover:-translate-y-0.5"
+                    className="h-5 w-5 text-accent transition-transform group-hover:-translate-y-0.5 motion-reduce:transition-none"
                     aria-hidden="true"
                   />
-                  <span className="text-sm font-medium text-white">
+                  <span className="text-sm font-medium text-ink">
                     Abrir mapa de Sevilla
                   </span>
-                  <span className="text-xs text-slate-500">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
                     Carga Google Maps solo si lo abres
                   </span>
                 </button>
               )}
             </div>
-          </div>
+          </aside>
         </div>
       </div>
-    </section>
+    </div>
   );
 };

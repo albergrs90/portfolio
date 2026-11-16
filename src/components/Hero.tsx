@@ -1,14 +1,19 @@
-import {
-  ArrowRight,
-  Code2,
-  Database,
-  Mail,
-  Terminal,
-  Workflow,
-} from "lucide-react";
+import { useEffect, useRef } from "react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import fotoFondo from "../images/fotolinkedin.webp";
+import foto from "../images/fotolinkedin.webp";
+import { PROJECTS } from "../data/projects";
 import { DEFAULT_DESCRIPTION, usePageMeta } from "../hooks/usePageMeta";
+import { BTN_PRIMARY, BTN_SECONDARY } from "./ui";
+
+const HERO_STATS = [
+  { value: "8+", label: "años de experiencia" },
+  { value: "+15 h", label: "ahorradas por semana" },
+  { value: "AYESA", label: "donde trabajo hoy" },
+  { value: "3", label: "productos publicados" },
+];
+
+const FEATURED = PROJECTS.find((project) => project.slug === "recruiterai");
 
 export const Hero = () => {
   usePageMeta(
@@ -16,109 +21,162 @@ export const Hero = () => {
     DEFAULT_DESCRIPTION,
   );
 
+  const sectionRef = useRef<HTMLElement>(null);
+
+  // Foco suave que sigue al cursor. Solo en puntero fino y sin movimiento
+  // reducido: en táctil no aporta y en móvil costaría frames.
+  useEffect(() => {
+    const element = sectionRef.current;
+    if (!element) return;
+
+    const finePointer = window.matchMedia("(pointer: fine)").matches;
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    if (!finePointer || reducedMotion) return;
+
+    let frame = 0;
+    const onMove = (event: PointerEvent) => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const rect = element.getBoundingClientRect();
+        element.style.setProperty("--spot-x", `${event.clientX - rect.left}px`);
+        element.style.setProperty("--spot-y", `${event.clientY - rect.top}px`);
+      });
+    };
+
+    element.addEventListener("pointermove", onMove);
+    return () => {
+      element.removeEventListener("pointermove", onMove);
+      cancelAnimationFrame(frame);
+    };
+  }, []);
+
   return (
     <section
+      ref={sectionRef}
       id="hero"
-      className="relative isolate flex min-h-[calc(100dvh-4rem)] items-center overflow-hidden pt-28 pb-16 md:pt-36 md:pb-20"
+      className="grain relative isolate overflow-hidden pb-16 pt-28 sm:pt-32 lg:pb-20 lg:pt-36"
     >
-      {/* Foto de fondo (decorativa) */}
       <div
-        className="absolute inset-0 -z-20 bg-slate-950 bg-cover bg-no-repeat opacity-90"
-        style={{
-          backgroundImage: `url(${fotoFondo})`,
-          backgroundPosition: "center 30%",
-        }}
+        className="bg-grid pointer-events-none absolute inset-0 -z-10"
+        aria-hidden="true"
+      />
+      <div
+        className="spotlight pointer-events-none absolute inset-0 -z-10"
+        aria-hidden="true"
+      />
+      <div
+        className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-b from-transparent to-canvas"
         aria-hidden="true"
       />
 
-      {/* Capas oscuras: mantienen la foto presente sin competir con el texto */}
-      <div
-        className="absolute inset-0 -z-10 bg-slate-950/55"
-        aria-hidden="true"
-      />
-      <div
-        className="absolute inset-0 -z-10 bg-gradient-to-b from-slate-950/45 via-slate-950/60 to-slate-950/90"
-        aria-hidden="true"
-      />
+      <div className="mx-auto w-full max-w-[1180px] px-6 lg:px-8">
+        <div className="grid items-center gap-14 lg:grid-cols-12 lg:gap-10">
+          <div className="lg:col-span-7">
+            <p className="inline-flex items-center gap-2.5 rounded-full border border-line px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-muted">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60 motion-reduce:hidden" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
+              </span>
+              Disponible · Sevilla / remoto
+            </p>
 
-      {/* Fondo decorativo con degradado suave */}
-      <div
-        className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-600/10 blur-[120px] rounded-full pointer-events-none -z-10"
-        aria-hidden="true"
-      />
+            <h1 className="mt-8 font-display text-[clamp(2.9rem,7vw,5.6rem)] leading-[0.96] tracking-[-0.035em] text-ink">
+              <span className="title-line">
+                <span>Del problema</span>
+              </span>
+              <span className="title-line">
+                <span style={{ animationDelay: "90ms" }}>al software</span>
+              </span>
+              <span className="title-line">
+                <span
+                  className="italic text-ink/90"
+                  style={{ animationDelay: "180ms" }}
+                >
+                  en producción.
+                </span>
+              </span>
+            </h1>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
-        <div className="flex flex-col items-center text-center max-w-3xl mx-auto">
-          {/* Badge de Disponibilidad */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/90 border border-slate-800 text-xs font-medium text-slate-300 mb-8 shadow-inner backdrop-blur-sm">
-            <span className="relative flex h-2 w-2">
-              <span className="motion-reduce:animate-none animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-            </span>
-            <span>Disponible para proyectos y oportunidades</span>
+            <p className="mt-7 max-w-lg text-pretty text-lg leading-relaxed text-muted">
+              Desarrollador full-stack con 8+ años en .NET Core, React y SQL
+              Server. Aplicaciones corporativas y productos propios, de la
+              primera reunión al despliegue.
+            </p>
+
+            <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <Link to="/projects" className={BTN_PRIMARY}>
+                Ver proyectos
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </Link>
+              <Link to="/como-trabajo" className={BTN_SECONDARY}>
+                Cómo trabajo
+              </Link>
+            </div>
           </div>
 
-          {/* Titular Principal */}
-          <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white leading-tight text-balance">
-            Desarrollador Web <br />
-            <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-sky-400 bg-clip-text text-transparent">
-              Full-Stack
-            </span>
-          </h1>
+          <div className="lg:col-span-5">
+            <div className="relative mx-auto w-full max-w-[420px] lg:max-w-none">
+              <div className="overflow-hidden rounded-xl border border-line-strong bg-raised">
+                <img
+                  src={foto}
+                  alt="Retrato de Alberto García Ríos"
+                  width={1024}
+                  height={1024}
+                  fetchPriority="high"
+                  className="aspect-[4/5] w-full object-cover"
+                />
+              </div>
 
-          {/* Subtítulo / Bio Breve */}
-          <p className="mt-6 text-lg sm:text-xl text-slate-300 leading-relaxed max-w-2xl">
-            Especializado en construir aplicaciones web robustas, escalables y
-            eficientes. Transformo ideas en software de alto rendimiento
-            utilizando arquitecturas modernas.
-          </p>
-
-          {/* Badges del Core Tech Stack */}
-          <div className="mt-6 flex flex-wrap justify-center gap-3">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-slate-900/80 border border-slate-700/60 text-slate-200 text-sm font-medium backdrop-blur-sm">
-              <Terminal className="w-4 h-4 text-purple-400" aria-hidden="true" />
-              .NET Core
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-slate-900/80 border border-slate-700/60 text-slate-200 text-sm font-medium backdrop-blur-sm">
-              <Code2 className="w-4 h-4 text-cyan-400" aria-hidden="true" />
-              React
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-slate-900/80 border border-slate-700/60 text-slate-200 text-sm font-medium backdrop-blur-sm">
-              <Database className="w-4 h-4 text-amber-400" aria-hidden="true" />
-              SQL
-            </span>
-          </div>
-
-          {/* Botones de Acción (CTAs) */}
-          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
-            <Link
-              to="/como-trabajo"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-medium px-6 py-3.5 rounded-xl transition-all shadow-lg shadow-blue-600/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
-            >
-              <Workflow className="w-4 h-4" aria-hidden="true" />
-              <span>Cómo trabajo</span>
-              <ArrowRight className="w-4 h-4" aria-hidden="true" />
-            </Link>
-
-            <Link
-              to="/projects"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-slate-900/80 hover:bg-slate-800 text-slate-100 border border-slate-700/70 font-medium px-6 py-3.5 rounded-xl transition-all backdrop-blur-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
-            >
-              <span>Ver proyectos</span>
-            </Link>
-          </div>
-
-          {/* Contacto discreto */}
-          <div className="mt-5">
-            <Link
-              to="/contact"
-              className="inline-flex items-center gap-2 rounded-lg px-2 py-1 text-sm font-medium text-slate-400 hover:text-blue-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
-            >
-              <Mail className="w-4 h-4" aria-hidden="true" />
-              <span>Contactar</span>
-            </Link>
+              {FEATURED && (
+                <Link
+                  to={`/projects/${FEATURED.slug}`}
+                  className="group absolute -bottom-7 -left-5 hidden w-60 rounded-xl border border-line-strong bg-canvas/90 p-3 backdrop-blur-md transition-colors hover:border-white/25 sm:block"
+                >
+                  <img
+                    src={FEATURED.cover.src}
+                    alt={FEATURED.cover.alt}
+                    width={FEATURED.cover.width}
+                    height={FEATURED.cover.height}
+                    loading="lazy"
+                    className="aspect-[16/10] w-full rounded-lg border border-line object-cover"
+                  />
+                  <div className="mt-3 flex items-end justify-between gap-2">
+                    <div>
+                      <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
+                        Caso de estudio
+                      </p>
+                      <p className="mt-0.5 text-sm font-medium text-ink">
+                        {FEATURED.name}
+                      </p>
+                    </div>
+                    <ArrowUpRight
+                      className="mb-0.5 h-4 w-4 shrink-0 text-muted transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-ink"
+                      aria-hidden="true"
+                    />
+                  </div>
+                </Link>
+              )}
+            </div>
           </div>
         </div>
+
+        <dl className="mt-16 grid grid-cols-2 gap-y-6 border-t border-line pt-6 sm:grid-cols-4 sm:divide-x sm:divide-line">
+          {HERO_STATS.map((stat, index) => (
+            <div
+              key={stat.label}
+              className={index === 0 ? "sm:pr-6" : "sm:px-6"}
+            >
+              <dt className="font-display text-2xl leading-none text-ink">
+                {stat.value}
+              </dt>
+              <dd className="mt-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
+                {stat.label}
+              </dd>
+            </div>
+          ))}
+        </dl>
       </div>
     </section>
   );

@@ -1,4 +1,5 @@
 import { Link, useParams } from "react-router-dom";
+import type { ReactNode } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -8,17 +9,30 @@ import {
 } from "lucide-react";
 import { GithubIcon } from "./SocialIcons";
 import { NotFound } from "./NotFound";
+import { Reveal } from "./Reveal";
 import { PROJECTS, getProjectBySlug } from "../data/projects";
 import { usePageMeta } from "../hooks/usePageMeta";
+import { BTN_PRIMARY, BTN_SECONDARY, CONTAINER, LABEL } from "./ui";
 
-const STATUS_STYLES: Record<string, string> = {
-  "En producción":
-    "border-emerald-500/30 bg-emerald-500/10 text-emerald-300",
-  Demo: "border-amber-500/30 bg-amber-500/10 text-amber-300",
+const STATUS_DOT: Record<string, string> = {
+  "En producción": "bg-emerald-400",
+  Demo: "bg-amber-400",
 };
 
-const META_BADGE =
-  "rounded-full border border-slate-700/70 bg-slate-900 px-2.5 py-1 text-[11px] font-medium text-slate-300";
+const SectionTitle = ({
+  id,
+  children,
+}: {
+  id: string;
+  children: ReactNode;
+}) => (
+  <h2
+    id={id}
+    className="border-b border-line pb-4 font-display text-3xl tracking-[-0.02em] text-ink"
+  >
+    {children}
+  </h2>
+);
 
 export const ProjectsDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -40,47 +54,52 @@ export const ProjectsDetail = () => {
   const next = PROJECTS[(index + 1) % PROJECTS.length];
 
   return (
-    <article className="pt-28 pb-20">
-      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+    <article className="pb-24 pt-28 sm:pt-32">
+      <div className={CONTAINER}>
         <Link
           to="/projects"
-          className="inline-flex items-center gap-2 rounded-lg text-sm font-medium text-slate-400 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+          className="inline-flex items-center gap-2 rounded-lg text-sm text-muted transition-colors hover:text-ink"
         >
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />
           Volver a proyectos
         </Link>
 
         <header className="mt-8">
-          <div className="flex flex-wrap items-center gap-2">
-            <span
-              className={`rounded-full border px-2.5 py-1 text-[11px] font-semibold ${STATUS_STYLES[project.status]}`}
-            >
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
+            <span className="inline-flex items-center gap-1.5">
+              <span
+                className={`h-1.5 w-1.5 rounded-full ${STATUS_DOT[project.status] ?? "bg-white/30"}`}
+                aria-hidden="true"
+              />
               {project.status}
             </span>
-            <span className={META_BADGE}>{project.kind}</span>
-            <span className={META_BADGE}>{project.year}</span>
+            <span className="text-white/20" aria-hidden="true">
+              /
+            </span>
+            <span>{project.kind}</span>
+            <span className="text-white/20" aria-hidden="true">
+              /
+            </span>
+            <span>{project.year}</span>
           </div>
 
-          <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-white sm:text-5xl">
+          <h1 className="mt-5 font-display text-5xl leading-[0.95] tracking-[-0.03em] text-ink sm:text-6xl lg:text-7xl">
             {project.name}
           </h1>
-          <p
-            className="mt-3 text-lg font-medium sm:text-xl"
-            style={{ color: project.accent }}
-          >
+          <p className="mt-4 max-w-3xl text-lg font-medium leading-relaxed text-ink">
             {project.tagline}
           </p>
-          <p className="mt-4 max-w-3xl text-base leading-relaxed text-slate-400">
+          <p className="mt-4 max-w-2xl leading-relaxed text-muted">
             {project.summary}
           </p>
 
-          <div className="mt-6 flex flex-wrap gap-3">
+          <div className="mt-7 flex flex-wrap gap-3">
             {project.links.live && (
               <a
                 href={project.links.live}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-medium text-white shadow-lg shadow-blue-600/25 transition-colors hover:bg-blue-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+                className={BTN_PRIMARY}
               >
                 Ver demo
                 <ExternalLink className="h-4 w-4" aria-hidden="true" />
@@ -92,7 +111,7 @@ export const ProjectsDetail = () => {
                 href={project.links.repo}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-xl border border-slate-700/70 bg-slate-900 px-5 py-3 text-sm font-medium text-slate-100 transition-colors hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+                className={BTN_SECONDARY}
               >
                 <GithubIcon className="h-4 w-4" />
                 Código
@@ -102,7 +121,7 @@ export const ProjectsDetail = () => {
           </div>
         </header>
 
-        <figure className="mt-10 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 shadow-2xl">
+        <figure className="mt-10 overflow-hidden rounded-xl border border-line bg-raised">
           <img
             src={project.cover.src}
             alt={project.cover.alt}
@@ -114,7 +133,7 @@ export const ProjectsDetail = () => {
           />
         </figure>
 
-        <dl className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <dl className="mt-10 grid grid-cols-2 border-t border-line sm:grid-cols-4">
           {[
             { label: "Rol", value: project.role },
             { label: "Año", value: String(project.year) },
@@ -123,203 +142,182 @@ export const ProjectsDetail = () => {
           ].map((item) => (
             <div
               key={item.label}
-              className="rounded-xl border border-slate-800 bg-slate-900/60 p-4"
+              className="border-b border-line py-4 pr-4 sm:border-b-0 sm:border-r sm:pl-6 sm:first:pl-0 sm:last:border-r-0"
             >
-              <dt className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
-                {item.label}
-              </dt>
-              <dd className="mt-1 text-sm font-medium text-slate-200">
-                {item.value}
-              </dd>
+              <dt className={LABEL}>{item.label}</dt>
+              <dd className="mt-1.5 text-sm text-ink">{item.value}</dd>
             </div>
           ))}
         </dl>
 
-        <section className="mt-14" aria-labelledby="challenge-title">
-          <h2
-            id="challenge-title"
-            className="text-2xl font-bold text-white"
-          >
-            El reto
-          </h2>
-          <p className="mt-3 text-base leading-relaxed text-slate-300">
-            {project.challenge}
-          </p>
-        </section>
+        <Reveal className="mt-20">
+          <section aria-labelledby="challenge-title">
+            <SectionTitle id="challenge-title">El reto</SectionTitle>
+            <p className="mt-5 max-w-3xl leading-relaxed text-muted">
+              {project.challenge}
+            </p>
+          </section>
+        </Reveal>
 
-        <section className="mt-14" aria-labelledby="highlights-title">
-          <h2
-            id="highlights-title"
-            className="text-2xl font-bold text-white"
-          >
-            Qué construí
-          </h2>
-          <div className="mt-6 grid gap-4 sm:grid-cols-2">
-            {project.highlights.map((highlight) => (
-              <div
-                key={highlight.title}
-                className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5"
-              >
-                <div className="flex items-center gap-2">
-                  <CheckCircle2
-                    className="h-4 w-4 shrink-0"
-                    style={{ color: project.accent }}
-                    aria-hidden="true"
-                  />
-                  <h3 className="font-semibold text-white">
-                    {highlight.title}
-                  </h3>
+        <Reveal className="mt-16">
+          <section aria-labelledby="highlights-title">
+            <SectionTitle id="highlights-title">Qué construí</SectionTitle>
+            <div className="mt-6 grid gap-x-10 gap-y-8 sm:grid-cols-2">
+              {project.highlights.map((highlight) => (
+                <div key={highlight.title} className="border-t border-line pt-5">
+                  <div className="flex items-center gap-2.5">
+                    <CheckCircle2
+                      className="h-4 w-4 shrink-0 text-accent"
+                      aria-hidden="true"
+                    />
+                    <h3 className="font-medium text-ink">{highlight.title}</h3>
+                  </div>
+                  <p className="mt-2 text-sm leading-relaxed text-muted">
+                    {highlight.text}
+                  </p>
                 </div>
-                <p className="mt-2 text-sm leading-relaxed text-slate-400">
-                  {highlight.text}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="mt-14" aria-labelledby="metrics-title">
-          <h2 id="metrics-title" className="text-2xl font-bold text-white">
-            El resultado
-          </h2>
-          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-            {project.metrics.map((metric) => (
-              <div
-                key={metric.label}
-                className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5"
-              >
-                <p
-                  className="text-3xl font-extrabold tracking-tight"
-                  style={{ color: project.accent }}
-                >
-                  {metric.value}
-                </p>
-                <p className="mt-1 text-sm text-slate-400">{metric.label}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {project.gallery.length > 0 && (
-          <section className="mt-14" aria-labelledby="gallery-title">
-            <h2 id="gallery-title" className="text-2xl font-bold text-white">
-              Vistas del proyecto
-            </h2>
-            <div className="mt-6 grid gap-4 sm:grid-cols-2">
-              {project.gallery.map((image) => (
-                <img
-                  key={image.src}
-                  src={image.src}
-                  alt={image.alt}
-                  width={image.width}
-                  height={image.height}
-                  loading="lazy"
-                  decoding="async"
-                  className="h-auto w-full rounded-xl border border-slate-800"
-                />
               ))}
             </div>
           </section>
+        </Reveal>
+
+        <Reveal className="mt-16">
+          <section aria-labelledby="metrics-title">
+            <SectionTitle id="metrics-title">El resultado</SectionTitle>
+            <div className="mt-6 grid grid-cols-1 gap-8 sm:grid-cols-3">
+              {project.metrics.map((metric) => (
+                <div key={metric.label} className="border-t border-line pt-5">
+                  <p className="font-display text-4xl leading-none tracking-[-0.02em] text-ink">
+                    {metric.value}
+                  </p>
+                  <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
+                    {metric.label}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+        </Reveal>
+
+        {project.gallery.length > 0 && (
+          <Reveal className="mt-16">
+            <section aria-labelledby="gallery-title">
+              <SectionTitle id="gallery-title">Vistas del proyecto</SectionTitle>
+              <div className="mt-6 grid gap-5 sm:grid-cols-2">
+                {project.gallery.map((image) => (
+                  <img
+                    key={image.src}
+                    src={image.src}
+                    alt={image.alt}
+                    width={image.width}
+                    height={image.height}
+                    loading="lazy"
+                    decoding="async"
+                    className="h-auto w-full rounded-lg border border-line bg-raised"
+                  />
+                ))}
+              </div>
+            </section>
+          </Reveal>
         )}
 
-        <section className="mt-14" aria-labelledby="mobile-title">
-          <h2 id="mobile-title" className="text-2xl font-bold text-white">
-            Responsive
-          </h2>
-          <div className="mt-6 flex flex-col items-center gap-6 rounded-2xl border border-slate-800 bg-slate-900/60 p-6 sm:flex-row sm:items-start">
-            <img
-              src={project.mobile.src}
-              alt={project.mobile.alt}
-              width={project.mobile.width}
-              height={project.mobile.height}
-              loading="lazy"
-              decoding="async"
-              className="w-full max-w-[240px] shrink-0 rounded-[1.75rem] border-4 border-slate-800 bg-slate-950"
-            />
-            <p className="max-w-sm text-sm leading-relaxed text-slate-400">
-              El mismo contenido y la misma jerarquía en móvil, con navegación
-              táctil y sin scroll horizontal.
-            </p>
-          </div>
-        </section>
-
-        <section className="mt-14 grid gap-6 sm:grid-cols-2">
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6">
-            <h2 className="flex items-center gap-2 text-lg font-bold text-white">
-              <Info className="h-4 w-4 text-slate-400" aria-hidden="true" />
-              Limitaciones
-            </h2>
-            <ul className="mt-3 space-y-2">
-              {project.limitations.map((item) => (
-                <li
-                  key={item}
-                  className="flex items-start gap-2 text-sm leading-relaxed text-slate-400"
-                >
-                  <span
-                    className="mt-2 h-1 w-1 shrink-0 rounded-full bg-slate-500"
-                    aria-hidden="true"
-                  />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6">
-            <h2 className="flex items-center gap-2 text-lg font-bold text-white">
-              <ArrowRight
-                className="h-4 w-4 text-slate-400"
-                aria-hidden="true"
+        <Reveal className="mt-16">
+          <section aria-labelledby="mobile-title">
+            <SectionTitle id="mobile-title">Responsive</SectionTitle>
+            <div className="mt-6 flex flex-col items-start gap-8 sm:flex-row">
+              <img
+                src={project.mobile.src}
+                alt={project.mobile.alt}
+                width={project.mobile.width}
+                height={project.mobile.height}
+                loading="lazy"
+                decoding="async"
+                className="w-full max-w-[220px] shrink-0 rounded-[1.75rem] border border-line bg-raised"
               />
-              Siguientes pasos
-            </h2>
-            <ul className="mt-3 space-y-2">
-              {project.nextSteps.map((item) => (
+              <p className="max-w-sm text-sm leading-relaxed text-muted">
+                El mismo contenido y la misma jerarquía en móvil, con navegación
+                táctil y sin scroll horizontal.
+              </p>
+            </div>
+          </section>
+        </Reveal>
+
+        <Reveal className="mt-16">
+          <section className="grid gap-12 border-t border-line pt-10 sm:grid-cols-2">
+            <div>
+              <h2 className="flex items-center gap-2.5 font-display text-2xl text-ink">
+                <Info className="h-4 w-4 text-muted" aria-hidden="true" />
+                Limitaciones
+              </h2>
+              <ul className="mt-4 space-y-2.5">
+                {project.limitations.map((item) => (
+                  <li
+                    key={item}
+                    className="flex items-start gap-3 text-sm leading-relaxed text-muted"
+                  >
+                    <span
+                      className="mt-2.5 h-px w-3 shrink-0 bg-white/25"
+                      aria-hidden="true"
+                    />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h2 className="flex items-center gap-2.5 font-display text-2xl text-ink">
+                <ArrowRight className="h-4 w-4 text-muted" aria-hidden="true" />
+                Siguientes pasos
+              </h2>
+              <ul className="mt-4 space-y-2.5">
+                {project.nextSteps.map((item) => (
+                  <li
+                    key={item}
+                    className="flex items-start gap-3 text-sm leading-relaxed text-muted"
+                  >
+                    <span
+                      className="mt-2.5 h-px w-3 shrink-0 bg-white/25"
+                      aria-hidden="true"
+                    />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
+        </Reveal>
+
+        <Reveal className="mt-16">
+          <section aria-labelledby="stack-title">
+            <SectionTitle id="stack-title">Stack</SectionTitle>
+            <ul className="mt-6 flex flex-wrap gap-2">
+              {project.stack.map((tech) => (
                 <li
-                  key={item}
-                  className="flex items-start gap-2 text-sm leading-relaxed text-slate-400"
+                  key={tech}
+                  className="rounded-md border border-line px-2.5 py-1 text-xs text-muted"
                 >
-                  <span
-                    className="mt-2 h-1 w-1 shrink-0 rounded-full bg-slate-500"
-                    aria-hidden="true"
-                  />
-                  {item}
+                  {tech}
                 </li>
               ))}
             </ul>
-          </div>
-        </section>
-
-        <section className="mt-14" aria-labelledby="stack-title">
-          <h2 id="stack-title" className="text-2xl font-bold text-white">
-            Stack
-          </h2>
-          <div className="mt-4 flex flex-wrap gap-2">
-            {project.stack.map((tech) => (
-              <span
-                key={tech}
-                className="rounded-lg border border-slate-800 bg-slate-950 px-3 py-1.5 text-sm font-medium text-slate-200"
-              >
-                {tech}
-              </span>
-            ))}
-          </div>
-        </section>
+          </section>
+        </Reveal>
 
         <nav
-          className="mt-16 grid gap-4 border-t border-slate-800 pt-8 sm:grid-cols-2"
+          className="mt-20 grid gap-4 border-t border-line pt-8 sm:grid-cols-2"
           aria-label="Más proyectos"
         >
           <Link
             to={`/projects/${previous.slug}`}
-            className="group rounded-xl border border-slate-800 bg-slate-900/60 p-5 transition-colors hover:border-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+            className="group rounded-xl border border-line p-5 transition-colors hover:border-line-strong"
           >
-            <span className="text-xs font-medium uppercase tracking-wide text-slate-500">
+            <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
               Anterior
             </span>
-            <span className="mt-1 flex items-center gap-2 font-semibold text-white">
+            <span className="mt-2 flex items-center gap-2 font-display text-2xl text-ink">
               <ArrowLeft
-                className="h-4 w-4 transition-transform group-hover:-translate-x-0.5"
+                className="h-4 w-4 transition-transform group-hover:-translate-x-0.5 motion-reduce:transition-none"
                 aria-hidden="true"
               />
               {previous.name}
@@ -328,15 +326,15 @@ export const ProjectsDetail = () => {
 
           <Link
             to={`/projects/${next.slug}`}
-            className="group rounded-xl border border-slate-800 bg-slate-900/60 p-5 text-left transition-colors hover:border-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 sm:text-right"
+            className="group rounded-xl border border-line p-5 text-left transition-colors hover:border-line-strong sm:text-right"
           >
-            <span className="text-xs font-medium uppercase tracking-wide text-slate-500">
+            <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
               Siguiente
             </span>
-            <span className="mt-1 flex items-center gap-2 font-semibold text-white sm:justify-end">
+            <span className="mt-2 flex items-center gap-2 font-display text-2xl text-ink sm:justify-end">
               {next.name}
               <ArrowRight
-                className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
+                className="h-4 w-4 transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none"
                 aria-hidden="true"
               />
             </span>

@@ -26,11 +26,11 @@ function App() {
   return (
     <Router>
       <ScrollToTop />
-      <div className="flex min-h-dvh flex-col bg-slate-950 text-slate-100 antialiased selection:bg-blue-500 selection:text-white">
+      <div className="flex min-h-dvh flex-col bg-canvas text-ink antialiased selection:bg-accent selection:text-canvas">
         <Navbar />
         <main className="flex-1">
           <ErrorBoundary>
-            <Suspense fallback={<div className="p-8 text-slate-500">Cargando...</div>}>
+            <Suspense fallback={<div className="p-8 font-mono text-xs text-muted">Cargando…</div>}>
               <Routes>
                 <Route path="/" element={<Hero />} />
                 <Route path="/about" element={<About />} />

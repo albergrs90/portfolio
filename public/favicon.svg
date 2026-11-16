@@ -1,6 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="14" fill="#020617" />
-  <path d="M26 20 14 32l12 12" fill="none" stroke="#3b82f6" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
-  <path d="M38 20l12 12-12 12" fill="none" stroke="#60a5fa" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
-  <path d="M34 16 30 48" fill="none" stroke="#93c5fd" stroke-width="5" stroke-linecap="round" />
+  <rect width="64" height="64" rx="14" fill="#08090C" />
+  <rect x="4.5" y="4.5" width="55" height="55" rx="11" fill="none" stroke="#edeef0" stroke-opacity="0.18" />
+  <text x="32" y="43" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-style="italic" font-size="26" fill="#edeef0">AG</text>
 </svg>

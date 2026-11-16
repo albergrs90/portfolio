@@ -1,37 +1,36 @@
-import { useLocation, Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
+import { BTN_PRIMARY, BTN_SECONDARY, CONTAINER } from "./ui";
 
 export const NotFound = () => {
   const location = useLocation();
 
   return (
-    <div className="flex min-h-dvh flex-col items-center justify-center px-6 py-24 text-center">
-      <p className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">
-        Error 404
-      </p>
-      <h1 className="mt-3 text-3xl font-bold text-white sm:text-4xl">
-        Página no encontrada
-      </h1>
-      <p className="mt-3 max-w-md text-slate-400">
-        La ruta{" "}
-        <code className="break-all rounded bg-slate-900 px-1.5 py-0.5 text-slate-300">
-          {location.pathname}
-        </code>{" "}
-        no existe en este portfolio.
-      </p>
+    <div className="flex min-h-[70dvh] flex-col justify-center py-28">
+      <div className={CONTAINER}>
+        <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">
+          Error 404
+        </p>
+        <h1 className="mt-4 font-display text-5xl leading-none tracking-[-0.03em] text-ink sm:text-7xl">
+          Esta página no <span className="italic">existe</span>.
+        </h1>
+        <p className="mt-5 max-w-md leading-relaxed text-muted">
+          La ruta{" "}
+          <code className="break-all rounded bg-white/[0.06] px-1.5 py-0.5 font-mono text-xs text-ink">
+            {location.pathname}
+          </code>{" "}
+          no forma parte del portfolio.
+        </p>
 
-      <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-        <Link
-          to="/"
-          className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
-        >
-          Volver al inicio
-        </Link>
-        <Link
-          to="/projects"
-          className="rounded-xl border border-slate-700/70 bg-slate-900 px-5 py-3 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
-        >
-          Ver proyectos
-        </Link>
+        <div className="mt-8 flex flex-wrap gap-3">
+          <Link to="/" className={BTN_PRIMARY}>
+            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+            Volver al inicio
+          </Link>
+          <Link to="/projects" className={BTN_SECONDARY}>
+            Ver proyectos
+          </Link>
+        </div>
       </div>
     </div>
   );

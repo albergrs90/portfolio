@@ -1,0 +1,18 @@
+import { useEffect, useState } from "react";
+
+/**
+ * Indica si la página se ha desplazado lo suficiente como para que el navbar
+ * deje de ser transparente sobre el hero.
+ */
+export const useScrolled = (threshold = 24) => {
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > threshold);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [threshold]);
+
+  return scrolled;
+};

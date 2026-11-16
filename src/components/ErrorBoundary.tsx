@@ -41,16 +41,16 @@ export class ErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       return (
         this.props.fallback ?? (
-          <div className="p-8 text-center text-red-400">
-            <h2 className="text-xl font-bold text-white mb-2">
+          <div className="mx-auto max-w-md p-8 text-center">
+            <h2 className="font-display text-2xl text-ink">
               Algo salió mal al renderizar esta página
             </h2>
-            <p className="text-slate-300 mb-4">
+            <p className="mt-3 text-sm leading-relaxed text-muted">
               Se produjo un error inesperado. Intenta recargar la página.
             </p>
             <button
               onClick={() => window.location.reload()}
-              className="text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors"
+              className="mt-5 rounded-lg bg-ink px-4 py-2 text-sm font-medium text-canvas transition-colors hover:bg-white"
             >
               Recargar página
             </button>
