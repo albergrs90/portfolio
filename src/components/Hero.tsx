@@ -128,36 +128,6 @@ export const Hero = () => {
                   className="aspect-[4/5] w-full object-cover"
                 />
               </div>
-
-              {FEATURED && (
-                <Link
-                  to={`/projects/${FEATURED.slug}`}
-                  className="group absolute -bottom-7 -left-5 hidden w-60 rounded-xl border border-line-strong bg-canvas/90 p-3 backdrop-blur-md transition-colors hover:border-white/25 sm:block"
-                >
-                  <img
-                    src={FEATURED.cover.src}
-                    alt={FEATURED.cover.alt}
-                    width={FEATURED.cover.width}
-                    height={FEATURED.cover.height}
-                    loading="lazy"
-                    className="aspect-[16/10] w-full rounded-lg border border-line object-cover"
-                  />
-                  <div className="mt-3 flex items-end justify-between gap-2">
-                    <div>
-                      <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
-                        Caso de estudio
-                      </p>
-                      <p className="mt-0.5 text-sm font-medium text-ink">
-                        {FEATURED.name}
-                      </p>
-                    </div>
-                    <ArrowUpRight
-                      className="mb-0.5 h-4 w-4 shrink-0 text-muted transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-ink"
-                      aria-hidden="true"
-                    />
-                  </div>
-                </Link>
-              )}
             </div>
           </div>
         </div>
