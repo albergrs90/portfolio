@@ -10,7 +10,7 @@ const HERO_STATS = [
   { value: "8+", label: "años de experiencia" },
   { value: "+15 h", label: "ahorradas por semana" },
   { value: "AYESA", label: "donde trabajo hoy" },
-  { value: "3", label: "productos publicados" },
+  { value: "4", label: "productos publicados" },
 ];
 
 const FEATURED = PROJECTS.find((project) => project.slug === "recruiterai");

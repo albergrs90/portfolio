@@ -38,7 +38,7 @@ export const PROFILE = {
 export const FACTS = [
   { value: "8+", label: "años de experiencia" },
   { value: "Sevilla", label: "trabajo en remoto" },
-  { value: "3", label: "productos publicados" },
+  { value: "4", label: "productos publicados" },
 ] as const;
 
 export const EXPERIENCE: ExperienceItem[] = [

@@ -44,6 +44,95 @@ export interface Project {
 
 export const PROJECTS: Project[] = [
   {
+    slug: "bettinganalyzer",
+    name: "BettingAnalyzer",
+    tagline:
+      "Tus apuestas de Bwin convertidas en ROI, rachas y evolución, sin subir el PDF",
+    summary:
+      "Analizador exclusivo para el historial de apuestas de Bwin: lee el PDF con OCR local y calcula beneficio, yield, win rate, rachas y evolución diaria, con filtros por período y exportación a CSV.",
+    year: 2026,
+    role: "Diseño y desarrollo frontend",
+    kind: "Producto propio",
+    status: "En producción",
+    accent: "#3b82f6",
+    stack: [
+      "React",
+      "JavaScript",
+      "Vite",
+      "Tailwind CSS",
+      "PDF.js",
+      "Tesseract.js",
+      "Framer Motion",
+    ],
+    cover: {
+      src: "/projects/bettinganalyzer/cover.jpg",
+      alt: "Panel de BettingAnalyzer con beneficio neto, ROI, win rate y evolución acumulada",
+      width: 1440,
+      height: 900,
+    },
+    gallery: [
+      {
+        src: "/projects/bettinganalyzer/detail-1.jpg",
+        alt: "Tabla de apuestas filtradas de BettingAnalyzer con estado, mercado, cuota y ganancias",
+        width: 1440,
+        height: 900,
+      },
+      {
+        src: "/projects/bettinganalyzer/detail-2.jpg",
+        alt: "Análisis avanzado de BettingAnalyzer con distribución de resultados, mercados y rachas",
+        width: 1440,
+        height: 900,
+      },
+    ],
+    mobile: {
+      src: "/projects/bettinganalyzer/mobile.jpg",
+      alt: "Vista móvil de BettingAnalyzer con las métricas principales",
+      width: 780,
+      height: 1688,
+    },
+    links: {
+      live: "https://bettinganalyzer.netlify.app/",
+      repo: "https://github.com/albergrs90/Analizador-Apuestas-Deportivas",
+    },
+    challenge:
+      "Bwin entrega el historial de apuestas como un PDF que no se puede filtrar ni sumar. Pasarlo a mano a una hoja de cálculo es lento y propenso a errores, y subir tickets con datos personales a un servicio externo no era una opción. El reto era extraer la información de un PDF real de Bwin y devolver métricas de apuestas fiables sin backend.",
+    highlights: [
+      {
+        title: "OCR 100% local",
+        text: "PDF.js renderiza cada página a canvas y Tesseract.js la reconoce en español dentro del navegador; el PDF de Bwin nunca se sube a un servidor.",
+      },
+      {
+        title: "Parser exclusivo de Bwin",
+        text: "El texto OCR se normaliza y se divide por talones para extraer estado, fecha, mercado, evento, importe, cuota y ganancias. Si el documento no es un historial de Bwin, se rechaza con un aviso claro.",
+      },
+      {
+        title: "Métricas de apuestas",
+        text: "Beneficio neto, ROI/yield, win rate, stake y cuota medios, rachas máximas y actual, apuestas por semana y días activos, con funciones puras y tests unitarios.",
+      },
+      {
+        title: "Del dato al análisis",
+        text: "Filtros por período y estado, búsqueda, tabla paginada, evolución acumulada, desglose por mercado y exportación a CSV del subconjunto filtrado.",
+      },
+    ],
+    metrics: [
+      { value: "100%", label: "OCR en el navegador" },
+      { value: "0", label: "PDF enviados a un servidor" },
+      { value: "1", label: "operador soportado: Bwin" },
+    ],
+    limitations: [
+      "Solo admite el formato de historial de Bwin: los PDFs de otros operadores se rechazan.",
+      "La calidad del OCR depende del PDF: páginas borrosas o giradas pueden introducir errores de lectura.",
+      "No conserva el historial entre sesiones; cada PDF se procesa y se descarta al recargar.",
+    ],
+    nextSteps: [
+      "Soporte para más operadores, con un parser independiente por formato.",
+      "Persistencia local del historial para comparar meses sin volver a subir el PDF.",
+      "Exportación a Excel y enlace compartible del análisis.",
+      "Fixtures de PDFs reales anonimizados para ampliar los tests del parser.",
+    ],
+    featured: true,
+  },
+  {
     slug: "recruiterai",
     name: "RecruiterAI",
     tagline: "De una oferta y cinco CV a un ranking de candidatos razonado",

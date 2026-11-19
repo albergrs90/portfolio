@@ -2,6 +2,7 @@
 //
 // Uso:
 //   npm run screenshots
+//   npm run screenshots -- --only=bettinganalyzer
 //
 // Requiere Playwright (`npm i -D playwright`) y un navegador instalado. El
 // script usa Chrome o Edge del sistema si están disponibles; si no, cae al
@@ -18,6 +19,23 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 const PROJECTS = [
+  {
+    slug: "bettinganalyzer",
+    // El modo demo genera apuestas de ejemplo para poder capturar el dashboard
+    // sin depender de un PDF real.
+    url: "https://bettinganalyzer.netlify.app/?demo=1",
+    settleMs: 3000,
+    detailRatios: [0.45, 1],
+    // El panel avanzado está cerrado por defecto; lo abrimos para la segunda
+    // captura de detalle.
+    prepare: async (page) => {
+      const toggle = page.locator('button[aria-controls="advanced-panel"]');
+      if ((await toggle.count()) > 0) {
+        await toggle.first().click();
+        await page.waitForTimeout(600);
+      }
+    },
+  },
   {
     slug: "recruiterai",
     url: "https://recruiteria.netlify.app/",
@@ -102,22 +120,28 @@ async function captureProject(browser, project) {
   const { title, length } = await waitForContent(page, project.url, project.settleMs);
   console.log(`  "${title}" (${length} caracteres de texto)`);
 
+  await scrollShot(page, 0);
+  await page.screenshot({
+    path: path.join(dir, "cover.jpg"),
+    type: "jpeg",
+    quality: 82,
+    animations: "disabled",
+  });
+
+  // Acciones opcionales que cambian la altura de la página (por ejemplo,
+  // desplegar un panel) antes de calcular los scrolls de detalle.
+  if (project.prepare) {
+    await project.prepare(page);
+  }
+
   const maxScroll = await page.evaluate(() =>
     Math.max(0, document.documentElement.scrollHeight - window.innerHeight),
   );
 
-  const shots = [
-    { name: "cover.jpg", top: 0 },
-    ...project.detailRatios.map((ratio, index) => ({
-      name: `detail-${index + 1}.jpg`,
-      top: Math.round(maxScroll * ratio),
-    })),
-  ];
-
-  for (const shot of shots) {
-    await scrollShot(page, shot.top);
+  for (const [index, ratio] of project.detailRatios.entries()) {
+    await scrollShot(page, Math.round(maxScroll * ratio));
     await page.screenshot({
-      path: path.join(dir, shot.name),
+      path: path.join(dir, `detail-${index + 1}.jpg`),
       type: "jpeg",
       quality: 82,
       animations: "disabled",
@@ -154,9 +178,23 @@ async function captureProject(browser, project) {
 }
 
 async function main() {
-  // Solo se regeneran las carpetas de estos proyectos; el resto de public/
-  // no se toca.
-  for (const project of PROJECTS) {
+  const onlyArg = process.argv.find((arg) => arg.startsWith("--only="));
+  const only = onlyArg ? onlyArg.slice("--only=".length) : null;
+  const projects = only
+    ? PROJECTS.filter((project) => project.slug === only)
+    : PROJECTS;
+
+  if (only && projects.length === 0) {
+    throw new Error(
+      `No existe el proyecto "${only}". Slugs disponibles: ${PROJECTS.map(
+        (project) => project.slug,
+      ).join(", ")}`,
+    );
+  }
+
+  // Solo se regeneran las carpetas de los proyectos seleccionados; el resto
+  // de public/ no se toca.
+  for (const project of projects) {
     await fs.rm(path.join(OUTPUT_DIR, project.slug), {
       recursive: true,
       force: true,
@@ -166,7 +204,7 @@ async function main() {
   const browser = await launchBrowser();
 
   try {
-    for (const project of PROJECTS) {
+    for (const project of projects) {
       await captureProject(browser, project);
     }
   } finally {

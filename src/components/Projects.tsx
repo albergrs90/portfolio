@@ -167,7 +167,7 @@ const ProjectCard = ({ project }: { project: Project }) => (
 export const Projects = () => {
   usePageMeta(
     "Proyectos · Alberto García Ríos",
-    "Casos de estudio de RecruiterAI, Berta Masajista y Lumina Invoice: problema, decisiones técnicas, resultados y qué haría después.",
+    "Casos de estudio de BettingAnalyzer, RecruiterAI, Berta Masajista y Lumina Invoice: problema, decisiones técnicas, resultados y qué haría después.",
   );
 
   const featured = PROJECTS.filter((project) => project.featured);
@@ -180,7 +180,7 @@ export const Projects = () => {
         label="Proyectos"
         title={
           <>
-            Tres productos, <span className="italic">tres problemas</span>.
+            Cuatro productos, <span className="italic">cuatro problemas</span>.
           </>
         }
         description="Productos propios y proyectos de cliente, en producción o con demo pública. Cada ficha cuenta el problema, las decisiones técnicas y qué haría después."
