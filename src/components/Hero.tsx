@@ -1,8 +1,7 @@
 import { useEffect, useRef } from "react";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import foto from "../images/fotolinkedin.webp";
-import { PROJECTS } from "../data/projects";
 import { DEFAULT_DESCRIPTION, usePageMeta } from "../hooks/usePageMeta";
 import { BTN_PRIMARY, BTN_SECONDARY } from "./ui";
 
@@ -12,8 +11,6 @@ const HERO_STATS = [
   { value: "AYESA", label: "donde trabajo hoy" },
   { value: "4", label: "productos publicados" },
 ];
-
-const FEATURED = PROJECTS.find((project) => project.slug === "recruiterai");
 
 export const Hero = () => {
   usePageMeta(
