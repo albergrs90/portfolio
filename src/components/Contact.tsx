@@ -44,7 +44,7 @@ const ERROR_MESSAGES: Record<ContactFailureReason, string> = {
 };
 
 const FIELD =
-  "w-full rounded-none border-0 border-b border-line bg-transparent px-0 py-3 text-sm text-ink placeholder:text-white/25 transition-colors focus:border-white/30 focus:outline-none";
+  "w-full rounded-lg border border-line bg-surface/60 px-4 py-3 text-sm text-ink placeholder:text-white/25 transition-colors hover:border-line-strong focus:border-accent/60 focus:bg-surface focus:outline-none focus:ring-2 focus:ring-inset focus:ring-accent/20";
 
 const ROW_ICON = "shrink-0 text-muted";
 
@@ -181,7 +181,7 @@ export const Contact = () => {
             ) : (
               <form onSubmit={handleSubmit} className="space-y-8">
                 <div>
-                  <label htmlFor="nombre" className={`${LABEL} block`}>
+                  <label htmlFor="nombre" className={`${LABEL} mb-2.5 block`}>
                     Nombre
                   </label>
                   <input
@@ -198,7 +198,7 @@ export const Contact = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="email" className={`${LABEL} block`}>
+                  <label htmlFor="email" className={`${LABEL} mb-2.5 block`}>
                     Correo electrónico
                   </label>
                   <input
@@ -215,7 +215,7 @@ export const Contact = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="mensaje" className={`${LABEL} block`}>
+                  <label htmlFor="mensaje" className={`${LABEL} mb-2.5 block`}>
                     Mensaje
                   </label>
                   <textarea
