@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import {
   Check,
   CheckCircle,
@@ -44,7 +45,7 @@ const ERROR_MESSAGES: Record<ContactFailureReason, string> = {
 };
 
 const FIELD =
-  "w-full rounded-lg border border-line bg-surface/60 px-4 py-3 text-sm text-ink placeholder:text-white/25 transition-colors hover:border-line-strong focus:border-accent/60 focus:bg-surface focus:outline-none focus:ring-2 focus:ring-inset focus:ring-accent/20";
+  "w-full rounded-lg border border-line bg-surface/60 px-4 py-3 text-base text-ink placeholder:text-white/25 transition-colors hover:border-line-strong focus:border-accent/60 focus:bg-surface focus:outline-none focus:ring-2 focus:ring-inset focus:ring-accent/20 sm:text-sm";
 
 const ROW_ICON = "shrink-0 text-muted";
 
@@ -66,6 +67,7 @@ export const Contact = () => {
   // Referencia para el temporizador de "copiado": se inicia al copiar y se
   // limpia correctamente en cada nueva copia o desmontaje.
   const copyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const successRef = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
     return () => {
@@ -74,6 +76,14 @@ export const Contact = () => {
       }
     };
   }, []);
+
+  // Al enviar, el formulario desaparece: llevamos el foco al mensaje de éxito
+  // para que los lectores de pantalla lo anuncien.
+  useEffect(() => {
+    if (submitted) {
+      successRef.current?.focus();
+    }
+  }, [submitted]);
 
   const copyEmail = async () => {
     if (copyTimer.current) {
@@ -160,17 +170,23 @@ export const Contact = () => {
           <div className="order-1 lg:order-2 lg:col-span-7">
             {submitted ? (
               <div className="border-t border-line pt-10">
-                <CheckCircle
-                  className="h-6 w-6 text-emerald-400"
-                  aria-hidden="true"
-                />
-                <h2 className="mt-4 font-display text-3xl text-ink">
-                  Mensaje enviado
-                </h2>
-                <p className="mt-3 max-w-md text-sm leading-relaxed text-muted">
-                  Gracias por escribir. Te responderé lo antes posible al correo
-                  que me has dejado.
-                </p>
+                <div role="status" aria-live="polite">
+                  <CheckCircle
+                    className="h-6 w-6 text-emerald-400"
+                    aria-hidden="true"
+                  />
+                  <h2
+                    ref={successRef}
+                    tabIndex={-1}
+                    className="mt-4 font-display text-3xl text-ink focus:outline-none"
+                  >
+                    Mensaje enviado
+                  </h2>
+                  <p className="mt-3 max-w-md text-sm leading-relaxed text-muted">
+                    Gracias por escribir. Te responderé lo antes posible al
+                    correo que me has dejado.
+                  </p>
+                </div>
                 <button
                   onClick={() => setSubmitted(false)}
                   className="mt-6 text-sm font-medium text-ink underline underline-offset-4 transition-colors hover:text-white"
@@ -192,6 +208,7 @@ export const Contact = () => {
                     maxLength={100}
                     autoComplete="name"
                     aria-describedby={error ? "contact-error" : undefined}
+                    aria-invalid={error ? true : undefined}
                     placeholder="Tu nombre o empresa"
                     className={FIELD}
                   />
@@ -209,6 +226,7 @@ export const Contact = () => {
                     maxLength={254}
                     autoComplete="email"
                     aria-describedby={error ? "contact-error" : undefined}
+                    aria-invalid={error ? true : undefined}
                     placeholder="correo@ejemplo.com"
                     className={FIELD}
                   />
@@ -226,6 +244,7 @@ export const Contact = () => {
                     maxLength={5000}
                     autoComplete="off"
                     aria-describedby={error ? "contact-error" : undefined}
+                    aria-invalid={error ? true : undefined}
                     placeholder="Cuéntame qué necesitas..."
                     className={`${FIELD} resize-none`}
                   ></textarea>
@@ -278,8 +297,15 @@ export const Contact = () => {
                 </button>
 
                 <p className="font-mono text-[10px] leading-relaxed text-muted">
-                  Tus datos se usan solo para responderte. No se comparten con
-                  terceros.
+                  Tus datos se usan solo para responderte y se procesan con
+                  Supabase y Resend.{" "}
+                  <Link
+                    to="/privacidad"
+                    className="underline underline-offset-2 transition-colors hover:text-ink"
+                  >
+                    Política de privacidad
+                  </Link>
+                  .
                 </p>
               </form>
             )}
@@ -311,7 +337,7 @@ export const Contact = () => {
                     type="button"
                     onClick={copyEmail}
                     aria-label={copied ? "Email copiado" : "Copiar email"}
-                    className="rounded-md p-2 text-muted transition-colors hover:bg-white/[0.04] hover:text-ink"
+                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-muted transition-colors hover:bg-white/[0.04] hover:text-ink"
                   >
                     {copied ? (
                       <Check

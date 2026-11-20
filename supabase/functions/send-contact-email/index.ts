@@ -9,7 +9,9 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { Resend } from "npm:resend@2.0.0";
 
-const MAX_BODY_CHARS = 20_000;
+// Margen para JSON con acentos o emojis: LIMITS.mensaje se mide en caracteres
+// Unicode, pero el cuerpo serializado puede ocupar más.
+const MAX_BODY_CHARS = 30_000;
 const LIMITS = { nombre: 100, email: 254, mensaje: 5_000 } as const;
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -237,7 +239,9 @@ serve(async (req) => {
     }
 
     const nombre = asText(body.nombre);
-    const email = asText(body.email);
+    // Normalizado a minúsculas para que el rate limit no se pueda esquivar
+    // alternando mayúsculas en la misma dirección.
+    const email = asText(body.email).toLowerCase();
     const mensaje = asText(body.mensaje);
 
     if (!nombre || !email || !mensaje) {

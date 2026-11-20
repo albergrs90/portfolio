@@ -1,9 +1,16 @@
 import { Link, useLocation } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import { useNoIndex, usePageMeta } from "../hooks/usePageMeta";
 import { BTN_PRIMARY, BTN_SECONDARY, CONTAINER } from "./ui";
 
 export const NotFound = () => {
   const location = useLocation();
+
+  usePageMeta(
+    "Página no encontrada · Alberto García Ríos",
+    "La página que buscas no existe. Vuelve al inicio o explora los proyectos del portfolio.",
+  );
+  useNoIndex();
 
   return (
     <div className="flex min-h-[70dvh] flex-col justify-center py-28">

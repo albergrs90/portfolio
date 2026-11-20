@@ -41,9 +41,9 @@ export const ProjectsDetail = () => {
 
   usePageMeta(
     project
-      ? `${project.name} · ${project.tagline} | Alberto García Ríos`
+      ? `${project.name} · Caso de estudio | Alberto García Ríos`
       : "Proyecto no encontrado · Alberto García Ríos",
-    project?.summary,
+    project?.tagline,
   );
 
   if (!project) {

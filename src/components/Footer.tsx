@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { GithubIcon, LinkedinIcon } from "./SocialIcons";
 import { PROFILE } from "../data/about";
 import { CONTAINER } from "./ui";
+import { setStoredConsent } from "../utils/consent";
 
 const FOOTER_LINKS = [
   { to: "/about", label: "Sobre mí" },
@@ -13,7 +14,10 @@ const FOOTER_LINKS = [
 ];
 
 const SOCIAL_LINK =
-  "text-muted transition-colors hover:text-ink";
+  "flex h-11 w-11 items-center justify-center rounded-md text-muted transition-colors hover:bg-white/[0.04] hover:text-ink";
+
+const LEGAL_LINK =
+  "inline-flex min-h-11 items-center uppercase tracking-[0.14em] transition-colors hover:text-ink";
 
 export const Footer = () => {
   return (
@@ -45,7 +49,7 @@ export const Footer = () => {
           </ul>
         </nav>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
           <a
             href={PROFILE.github}
             target="_blank"
@@ -76,14 +80,26 @@ export const Footer = () => {
 
       <div className="border-t border-line">
         <div
-          className={`${CONTAINER} flex flex-col gap-1 py-4 font-mono text-[10px] uppercase tracking-[0.14em] text-muted sm:flex-row sm:items-center sm:justify-between`}
+          className={`${CONTAINER} flex flex-col gap-1 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-muted sm:flex-row sm:items-center sm:justify-between`}
         >
           <p>
             © {new Date().getFullYear()} {PROFILE.name}
           </p>
-          <p>
-            {PROFILE.location} · {PROFILE.modality}
-          </p>
+          <div className="flex flex-wrap items-center gap-x-5">
+            <Link to="/privacidad" className={LEGAL_LINK}>
+              Privacidad
+            </Link>
+            <button
+              type="button"
+              onClick={() => setStoredConsent(null)}
+              className={LEGAL_LINK}
+            >
+              Cookies
+            </button>
+            <p>
+              {PROFILE.location} · {PROFILE.modality}
+            </p>
+          </div>
         </div>
       </div>
     </footer>

@@ -81,6 +81,13 @@ body {
   outline-offset: 2px;
 }
 
+/* Los botones nativos no heredan `pointer`; los deshabilitados conservan su
+   cursor de no permitido. */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]) {
+  cursor: pointer;
+}
+
 /* Retícula fina con máscara radial: da profundidad sin ruido. */
 .bg-grid {
   background-image:

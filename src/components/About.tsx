@@ -89,7 +89,7 @@ export const About = () => {
                 href={PROFILE.cv}
                 download
                 className={BTN_PRIMARY}
-                onClick={() => trackEvent("download_cv", { location: "hero" })}
+                onClick={() => trackEvent("download_cv", { location: "about" })}
               >
                 <Download className="h-4 w-4" aria-hidden="true" />
                 Descargar CV

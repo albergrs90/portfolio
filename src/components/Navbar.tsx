@@ -129,7 +129,7 @@ export const Navbar = () => {
         {/* Botón móvil */}
         <button
           onClick={toggleMenu}
-          className="-mr-2 p-2 text-muted transition-colors hover:text-ink md:hidden"
+          className="-mr-2 flex h-11 w-11 items-center justify-center rounded-md text-muted transition-colors hover:bg-white/[0.04] hover:text-ink md:hidden"
           aria-label={isOpen ? "Cerrar menú" : "Abrir menú"}
           aria-expanded={isOpen}
           aria-controls="mobile-menu"

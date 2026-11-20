@@ -12,6 +12,7 @@ import { NotFound } from "./components/NotFound";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { ScrollToTop } from "./components/ScrollToTop";
 import { AnalyticsTracker } from "./components/AnalyticsTracker";
+import { CookieConsent } from "./components/CookieConsent";
 
 const Projects = lazy(() =>
   import("./components/Projects").then((mod) => ({ default: mod.Projects })),
@@ -33,15 +34,28 @@ const HowIWork = lazy(() =>
 const Contact = lazy(() =>
   import("./components/Contact").then((mod) => ({ default: mod.Contact })),
 );
+const Privacy = lazy(() =>
+  import("./components/Privacy").then((mod) => ({ default: mod.Privacy })),
+);
 
 function App() {
   return (
     <Router>
       <ScrollToTop />
       <AnalyticsTracker />
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[70] focus:rounded-lg focus:bg-ink focus:px-4 focus:py-3 focus:text-sm focus:font-medium focus:text-canvas"
+      >
+        Saltar al contenido
+      </a>
       <div className="flex min-h-dvh flex-col bg-canvas text-ink antialiased selection:bg-accent selection:text-canvas">
         <Navbar />
-        <main className="flex-1">
+        <main
+          id="main-content"
+          tabIndex={-1}
+          className="flex-1 focus:outline-none"
+        >
           <ErrorBoundary>
             <Suspense
               fallback={
@@ -63,6 +77,7 @@ function App() {
                 <Route path="/projects" element={<Projects />} />
                 <Route path="/projects/:slug" element={<ProjectsDetail />} />
                 <Route path="/contact" element={<Contact />} />
+                <Route path="/privacidad" element={<Privacy />} />
                 {/* Ruta 404 */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
@@ -71,6 +86,7 @@ function App() {
         </main>
         <Footer />
       </div>
+      <CookieConsent />
     </Router>
   );
 }
