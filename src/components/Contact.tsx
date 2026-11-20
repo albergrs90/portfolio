@@ -16,6 +16,7 @@ import { sendContactMessage } from "../lib/contact";
 import type { ContactFailureReason } from "../lib/contact";
 import { PROFILE } from "../data/about";
 import { usePageMeta } from "../hooks/usePageMeta";
+import { trackEvent } from "../utils/analytics";
 import { BTN_PRIMARY, CONTAINER, LABEL } from "./ui";
 
 const EMAIL = PROFILE.email;
@@ -82,8 +83,10 @@ export const Contact = () => {
     try {
       await navigator.clipboard.writeText(EMAIL);
       setCopied(true);
+      trackEvent("contact_copy_email", { location: "contact_page" });
       copyTimer.current = setTimeout(() => setCopied(false), 2000);
     } catch {
+      trackEvent("contact_click", { method: "mailto_fallback" });
       window.location.href = `mailto:${EMAIL}`;
     }
   };
@@ -133,6 +136,7 @@ export const Contact = () => {
     // Solo arrancamos el cooldown cuando el envío se ha confirmado, para que un
     // fallo de red no impida reintentar de inmediato.
     lastSubmitTime.current = Date.now();
+    trackEvent("contact_submit", { status: "success" });
     setSubmitted(true);
     form.reset();
   };
@@ -252,6 +256,11 @@ export const Contact = () => {
                     <p>{error}</p>
                     <a
                       href={`mailto:${EMAIL}?subject=${encodeURIComponent("Contacto desde tu portfolio")}`}
+                      onClick={() =>
+                        trackEvent("contact_click", {
+                          method: "email_error_box",
+                        })
+                      }
                       className="mt-1 inline-block font-medium underline underline-offset-2 hover:text-red-200"
                     >
                       Escríbeme a {EMAIL}
@@ -290,6 +299,9 @@ export const Contact = () => {
                     <p className={LABEL}>Email</p>
                     <a
                       href={`mailto:${EMAIL}?subject=${encodeURIComponent("Contacto desde tu portfolio")}`}
+                      onClick={() =>
+                        trackEvent("contact_click", { method: "email" })
+                      }
                       className="mt-1 block truncate text-sm text-ink transition-colors hover:text-white"
                     >
                       {EMAIL}
@@ -321,6 +333,9 @@ export const Contact = () => {
                     <p className={LABEL}>Teléfono</p>
                     <a
                       href={PROFILE.phoneHref}
+                      onClick={() =>
+                        trackEvent("contact_click", { method: "phone" })
+                      }
                       className="mt-1 block text-sm text-ink transition-colors hover:text-white"
                     >
                       {PROFILE.phoneDisplay}
@@ -336,6 +351,12 @@ export const Contact = () => {
                       href={PROFILE.linkedin}
                       target="_blank"
                       rel="noopener noreferrer"
+                      onClick={() =>
+                        trackEvent("social_profile_click", {
+                          platform: "linkedin",
+                          location: "contact_page",
+                        })
+                      }
                       className="mt-1 flex items-center gap-1 text-sm text-ink transition-colors hover:text-white"
                     >
                       alberto-garcia-rios
@@ -358,6 +379,12 @@ export const Contact = () => {
                       href={PROFILE.github}
                       target="_blank"
                       rel="noopener noreferrer"
+                      onClick={() =>
+                        trackEvent("social_profile_click", {
+                          platform: "github",
+                          location: "contact_page",
+                        })
+                      }
                       className="mt-1 flex items-center gap-1 text-sm text-ink transition-colors hover:text-white"
                     >
                       albergrs90

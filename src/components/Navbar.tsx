@@ -4,6 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 import { GithubIcon } from "./SocialIcons";
 import { PROFILE } from "../data/about";
 import { useScrolled } from "../hooks/useScrolled";
+import { trackEvent } from "../utils/analytics";
 
 interface NavLink {
   to: string;
@@ -103,6 +104,12 @@ export const Navbar = () => {
             href={PROFILE.github}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() =>
+              trackEvent("social_profile_click", {
+                platform: "github",
+                location: "navbar",
+              })
+            }
             className="hidden text-muted transition-colors hover:text-ink lg:block"
             aria-label="GitHub"
           >
@@ -110,6 +117,9 @@ export const Navbar = () => {
           </a>
           <Link
             to="/contact"
+            onClick={() =>
+              trackEvent("cta_contact_click", { location: "navbar_desktop" })
+            }
             className="rounded-lg bg-ink px-4 py-2 text-[13px] font-semibold text-canvas transition-colors hover:bg-white"
           >
             Hablemos
@@ -130,18 +140,13 @@ export const Navbar = () => {
 
       {/* Menú móvil */}
       {isOpen && (
-        <div
-          id="mobile-menu"
-          className="border-t border-line md:hidden"
-        >
+        <div id="mobile-menu" className="border-t border-line md:hidden">
           <nav className="mx-auto flex w-full max-w-[1180px] flex-col px-6 py-4">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.to}
                 to={link.to}
-                aria-current={
-                  isActive(pathname, link.to) ? "page" : undefined
-                }
+                aria-current={isActive(pathname, link.to) ? "page" : undefined}
                 className={`border-b border-line py-3 text-sm ${
                   isActive(pathname, link.to) ? "text-ink" : "text-muted"
                 }`}
@@ -152,7 +157,10 @@ export const Navbar = () => {
             ))}
             <Link
               to="/contact"
-              onClick={() => setIsOpen(false)}
+              onClick={() => {
+                setIsOpen(false);
+                trackEvent("cta_contact_click", { location: "navbar_mobile" });
+              }}
               className="mt-4 inline-flex items-center justify-center rounded-lg bg-ink px-4 py-3 text-sm font-semibold text-canvas"
             >
               Hablemos

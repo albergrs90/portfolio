@@ -6,6 +6,7 @@ import { Reveal } from "./Reveal";
 import { PROJECTS } from "../data/projects";
 import type { Project } from "../data/projects";
 import { usePageMeta } from "../hooks/usePageMeta";
+import { trackEvent } from "../utils/analytics";
 import { CONTAINER } from "./ui";
 
 const STATUS_DOT: Record<string, string> = {
@@ -20,6 +21,12 @@ const ProjectLinks = ({ project }: { project: Project }) => (
         href={project.links.repo}
         target="_blank"
         rel="noopener noreferrer"
+        onClick={() =>
+          trackEvent("project_repo_click", {
+            project_name: project.name,
+            location: "projects_list",
+          })
+        }
         aria-label={`Repositorio de ${project.name} en GitHub`}
         className="rounded-md p-2 text-muted transition-colors hover:bg-white/[0.04] hover:text-ink"
       >
@@ -31,6 +38,12 @@ const ProjectLinks = ({ project }: { project: Project }) => (
         href={project.links.live}
         target="_blank"
         rel="noopener noreferrer"
+        onClick={() =>
+          trackEvent("project_demo_click", {
+            project_name: project.name,
+            location: "projects_list",
+          })
+        }
         aria-label={`Abrir la demo de ${project.name}`}
         className="rounded-md p-2 text-muted transition-colors hover:bg-white/[0.04] hover:text-ink"
       >

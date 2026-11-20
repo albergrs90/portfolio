@@ -12,6 +12,7 @@ import { NotFound } from "./NotFound";
 import { Reveal } from "./Reveal";
 import { PROJECTS, getProjectBySlug } from "../data/projects";
 import { usePageMeta } from "../hooks/usePageMeta";
+import { trackEvent } from "../utils/analytics";
 import { BTN_PRIMARY, BTN_SECONDARY, CONTAINER, LABEL } from "./ui";
 
 const STATUS_DOT: Record<string, string> = {
@@ -99,6 +100,12 @@ export const ProjectsDetail = () => {
                 href={project.links.live}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() =>
+                  trackEvent("project_demo_click", {
+                    project_name: project.name,
+                    location: "project_detail",
+                  })
+                }
                 className={BTN_PRIMARY}
               >
                 Ver demo
@@ -111,6 +118,12 @@ export const ProjectsDetail = () => {
                 href={project.links.repo}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() =>
+                  trackEvent("project_repo_click", {
+                    project_name: project.name,
+                    location: "project_detail",
+                  })
+                }
                 className={BTN_SECONDARY}
               >
                 <GithubIcon className="h-4 w-4" />
@@ -164,7 +177,10 @@ export const ProjectsDetail = () => {
             <SectionTitle id="highlights-title">Qué construí</SectionTitle>
             <div className="mt-6 grid gap-x-10 gap-y-8 sm:grid-cols-2">
               {project.highlights.map((highlight) => (
-                <div key={highlight.title} className="border-t border-line pt-5">
+                <div
+                  key={highlight.title}
+                  className="border-t border-line pt-5"
+                >
                   <div className="flex items-center gap-2.5">
                     <CheckCircle2
                       className="h-4 w-4 shrink-0 text-accent"
@@ -202,7 +218,9 @@ export const ProjectsDetail = () => {
         {project.gallery.length > 0 && (
           <Reveal className="mt-16">
             <section aria-labelledby="gallery-title">
-              <SectionTitle id="gallery-title">Vistas del proyecto</SectionTitle>
+              <SectionTitle id="gallery-title">
+                Vistas del proyecto
+              </SectionTitle>
               <div className="mt-6 grid gap-5 sm:grid-cols-2">
                 {project.gallery.map((image) => (
                   <img

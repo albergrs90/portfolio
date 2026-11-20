@@ -22,13 +22,8 @@ import {
   PROFILE,
 } from "../data/about";
 import { usePageMeta } from "../hooks/usePageMeta";
-import {
-  BTN_GHOST,
-  BTN_PRIMARY,
-  BTN_SECONDARY,
-  CONTAINER,
-  LABEL,
-} from "./ui";
+import { BTN_GHOST, BTN_PRIMARY, BTN_SECONDARY, CONTAINER, LABEL } from "./ui";
+import { trackEvent } from "../utils/analytics";
 
 export const About = () => {
   usePageMeta(
@@ -90,7 +85,12 @@ export const About = () => {
             </dl>
 
             <div className="mt-10 flex flex-wrap items-center gap-3">
-              <a href={PROFILE.cv} download className={BTN_PRIMARY}>
+              <a
+                href={PROFILE.cv}
+                download
+                className={BTN_PRIMARY}
+                onClick={() => trackEvent("download_cv", { location: "hero" })}
+              >
                 <Download className="h-4 w-4" aria-hidden="true" />
                 Descargar CV
               </a>

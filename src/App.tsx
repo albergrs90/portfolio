@@ -11,26 +11,45 @@ import { Hero } from "./components/Hero";
 import { NotFound } from "./components/NotFound";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { ScrollToTop } from "./components/ScrollToTop";
+import { AnalyticsTracker } from "./components/AnalyticsTracker";
 
-const Projects = lazy(() => import("./components/Projects").then((mod) => ({ default: mod.Projects })));
-const About = lazy(() => import("./components/About").then((mod) => ({ default: mod.About })));
-const Skills = lazy(() => import("./components/Skills").then((mod) => ({ default: mod.Skills })));const ProjectsDetail = lazy(
-  () => import("./components/ProjectsDetail").then((mod) => ({ default: mod.ProjectsDetail }))
+const Projects = lazy(() =>
+  import("./components/Projects").then((mod) => ({ default: mod.Projects })),
+);
+const About = lazy(() =>
+  import("./components/About").then((mod) => ({ default: mod.About })),
+);
+const Skills = lazy(() =>
+  import("./components/Skills").then((mod) => ({ default: mod.Skills })),
+);
+const ProjectsDetail = lazy(() =>
+  import("./components/ProjectsDetail").then((mod) => ({
+    default: mod.ProjectsDetail,
+  })),
 );
 const HowIWork = lazy(() =>
-  import("./components/HowIWork").then((mod) => ({ default: mod.HowIWork }))
+  import("./components/HowIWork").then((mod) => ({ default: mod.HowIWork })),
 );
-const Contact = lazy(() => import("./components/Contact").then((mod) => ({ default: mod.Contact })));
+const Contact = lazy(() =>
+  import("./components/Contact").then((mod) => ({ default: mod.Contact })),
+);
 
 function App() {
   return (
     <Router>
       <ScrollToTop />
+      <AnalyticsTracker />
       <div className="flex min-h-dvh flex-col bg-canvas text-ink antialiased selection:bg-accent selection:text-canvas">
         <Navbar />
         <main className="flex-1">
           <ErrorBoundary>
-            <Suspense fallback={<div className="p-8 font-mono text-xs text-muted">Cargando…</div>}>
+            <Suspense
+              fallback={
+                <div className="p-8 font-mono text-xs text-muted">
+                  Cargando…
+                </div>
+              }
+            >
               <Routes>
                 <Route path="/" element={<Hero />} />
                 <Route path="/about" element={<About />} />
