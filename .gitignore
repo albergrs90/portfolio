@@ -40,3 +40,6 @@ Desktop.ini
 
 # CLI de despliegue
 .netlify
+
+results.json
+results.xml
